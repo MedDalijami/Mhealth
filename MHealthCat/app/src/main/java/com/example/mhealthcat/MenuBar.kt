@@ -1,5 +1,6 @@
 package com.example.mhealthcat
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -53,23 +54,11 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 .weight(0.2f)
         )
         {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f)
-                    .clickable { showNavMenu = !showNavMenu },
-                shape = CircleShape,
-
-                border = BorderStroke(3.dp, RetroPixelBorder)
-
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.baseline_menu_24),
-                    modifier = Modifier.padding(5.dp),
-                    contentDescription = "Functions menu",
-                    colorFilter = ColorFilter.tint(RetroPixelBorder)
-                )
-            }
+            CreateImage(
+                onItemClick = { showNavMenu = !showNavMenu},
+                imgRes = R.drawable.baseline_menu_24,
+                description = "Functions Menu"
+            )
             val functionalityList = listOf(
                 Triple("Domov", "\uD83C\uDFE1", AppScreen.Home),
                 Triple("Spanje", "\uD83C\uDF19", AppScreen.Sleep),
@@ -100,22 +89,12 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 .fillMaxSize()
                 .weight(0.2f)
         ) {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f)
-                    .clickable { showUserMenu = !showUserMenu },
-                shape = CircleShape,
-                border = BorderStroke(3.dp, RetroPixelBorder)
 
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.user_menu),
-                    modifier = Modifier.padding(5.dp),
-                    contentDescription = "Urer menu",
-                    colorFilter = ColorFilter.tint(RetroPixelBorder)
-                )
-            }
+            CreateImage(
+                onItemClick = {showUserMenu = !showUserMenu },
+                imgRes = R.drawable.user_menu,
+                description = "User Menu"
+            )
 
             val userMenuList = listOf(
                 Triple("Uporabnik", "\uD83D\uDC64", AppScreen.User),
@@ -128,7 +107,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 items = userMenuList,
                 onItemClick = { state ->
                     onNavigate(state)
-                    showNavMenu = false
+                    showUserMenu = false
                 }
             )
 
@@ -203,5 +182,32 @@ fun DropDownMenu(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CreateImage (
+    onItemClick: () -> Unit = {},
+    color: Color = RetroPixelBorder,
+    imgRes: Int,
+    description: String,
+    modifier: Modifier = Modifier
+        .fillMaxSize()
+        .aspectRatio(1f)
+        .clickable{ onItemClick()}
+
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        border = BorderStroke(3.dp, color)
+
+    ) {
+        Image(
+            painter = painterResource(id = imgRes),
+            modifier = Modifier.padding(5.dp),
+            contentDescription = description,
+            colorFilter = ColorFilter.tint(color)
+        )
     }
 }

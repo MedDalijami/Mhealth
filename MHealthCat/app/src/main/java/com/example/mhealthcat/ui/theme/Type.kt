@@ -12,6 +12,7 @@ import com.example.mhealthcat.R
 
 // Used pixelFont
 val pixelFont = FontFamily(Font(R.font.press_start_2p))
+val roboto = FontFamily(Font(R.font.roboto_regular))
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = pixelFont,
