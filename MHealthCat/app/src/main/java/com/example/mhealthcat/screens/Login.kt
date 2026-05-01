@@ -42,7 +42,7 @@ fun Login (onNavigate: (AppScreen) -> Unit) {
     var password by remember { mutableStateOf("") }
     val isValidPassword = password.length >= 8 && password.any {it.isDigit()}
     var email by remember { mutableStateOf("") }
-    val isValidEmail = email.contains("@")
+    val isValidEmail = email.contains("@") && email.contains(".")
     var errorMsg by remember {mutableStateOf(false)}
 
     Column(
@@ -60,83 +60,21 @@ fun Login (onNavigate: (AppScreen) -> Unit) {
         )
 
         Column {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                placeholder = {
-                    Text(
-                        text = "e-mail naslov",
-                        fontFamily = roboto,
-                        fontSize = 20.sp
-                    )
-                },
-                singleLine = true,
-                isError = email.isNotEmpty() && !isValidEmail,
-                supportingText = {
-                    if (email.isNotEmpty() && !isValidEmail) {
-                        Text(
-                            text = "e-mail mora vsebovati @",
-                            fontFamily = roboto,
-                            fontSize = 15.sp,
-                            color = Color.Red
-                        )
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White,
-                    errorBorderColor = Color.Red,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White
-                ),
-                textStyle = TextStyle(
-                    fontFamily = roboto,
-                    fontSize = 20.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+
+            CreateTextField(
+                textFieldValue = email,
+                onValueChange = {email = it},
+                isValid = isValidEmail,
+                placeholder = "e-mail naslov",
+                errorMsg = "Vnesen e-mail naslov ni veljaven"
             )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                placeholder = {
-                    Text(
-                        text = "geslo",
-                        fontFamily = roboto,
-                        fontSize = 20.sp
-                    )
-                },
-                singleLine = true,
-                isError = password.isNotEmpty() && !isValidPassword,
-                supportingText = {
-                    if (password.isNotEmpty() && !isValidPassword) {
-                        Text(
-                            text = "Geslo mora vsebovati 8 znakov in vsaj eno cifro",
-                            fontFamily = roboto,
-                            fontSize = 15.sp,
-                            color = Color.Red
-                        )
-                    }
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White,
-                    errorBorderColor = Color.Red,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White
-                ),
-                textStyle = TextStyle(
-                    fontFamily = roboto,
-                    fontSize = 20.sp
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-            )
+            CreateTextField(
+                textFieldValue = password,
+                onValueChange = {password = it},
+                isValid = isValidPassword,
+                placeholder = "geslo",
+                errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro")
         }
 
         Column(
@@ -147,8 +85,8 @@ fun Login (onNavigate: (AppScreen) -> Unit) {
                 horizontalArrangement = Arrangement.SpaceEvenly
 
             ) {
-                OutlinedButton(
-                    modifier = Modifier.weight(0.45f),
+                CreateButtonForLogin(
+                    modifier = Modifier.weight(1f),
                     onClick = {
                         if (isValidEmail && isValidPassword) {
                             onNavigate(AppScreen.Home)
@@ -158,35 +96,20 @@ fun Login (onNavigate: (AppScreen) -> Unit) {
                             errorMsg = true
                         }
                     },
-                    border = BorderStroke(width = 3.dp, color = RetroPixelBorder)
-                ) {
-                    Text(
-                        text = "Vpiši se",
-                        fontSize = 20.sp,
-                        fontFamily = roboto,
-                        color = Color.White
-                    )
-                }
+                    buttonText = "Vpiši se"
+                )
                 Card(
                     modifier = Modifier
                         .weight(0.1f)
                 ) { }
 
-                OutlinedButton(
-                    modifier = Modifier.weight(0.45f),
-                    onClick = {
-                        onNavigate(AppScreen.SignUp)
-                    },
-                    border = BorderStroke(width = 3.dp, color = RetroPixelBorder)
-                ) {
-                    Text(
-                        text = "Registriraj se",
-                        fontSize = 20.sp,
-                        fontFamily = roboto,
-                        color = Color.White
-                    )
-                }
+                CreateButtonForLogin(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigate(AppScreen.SignUp) },
+                    buttonText = "Registriraj se"
+                )
             }
+
             if (errorMsg) {
                 Text(
                     text = "Prosim vpišite pravilne podatke",
@@ -202,6 +125,75 @@ fun Login (onNavigate: (AppScreen) -> Unit) {
         }
     }
 
+}
+
+
+@Composable
+fun CreateButtonForLogin(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    buttonText: String
+
+){
+    OutlinedButton(
+        modifier = modifier,
+        onClick = onClick,
+        border = BorderStroke(width = 3.dp, color = RetroPixelBorder)
+    ) {
+        Text(
+            text = buttonText,
+            fontSize = 20.sp,
+            fontFamily = roboto,
+            color = Color.White
+        )
+    }
+}
+@Composable
+fun CreateTextField (
+    textFieldValue: String,
+    onValueChange: (String) -> Unit,
+    isValid: Boolean = true,
+    placeholder: String = textFieldValue,
+    errorMsg: String = "Prišlo je do napake"
+    ) {
+    OutlinedTextField(
+        value = textFieldValue,
+        onValueChange = { onValueChange(it) },
+        placeholder = {
+            Text(
+                text = placeholder,
+                fontFamily = roboto,
+                fontSize = 20.sp
+            )
+        },
+        singleLine = true,
+        isError = !isValid && textFieldValue.isNotEmpty(),
+        supportingText = {
+            if (!isValid && textFieldValue.isNotEmpty()) {
+                Text(
+                    text = errorMsg,
+                    fontFamily = roboto,
+                    fontSize = 15.sp,
+                    color = Color.Red
+                )
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.White,
+            unfocusedBorderColor = Color.White,
+            errorBorderColor = Color.Red,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            cursorColor = Color.White
+        ),
+        textStyle = TextStyle(
+            fontFamily = roboto,
+            fontSize = 20.sp
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    )
 }
 
 @Preview(showBackground = true)
