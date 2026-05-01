@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mhealthcat.Screens.Login
+import com.example.mhealthcat.screens.Login
 
 
 // Functions like pseudo "State machine"
@@ -45,7 +45,9 @@ fun Screen(modifier: Modifier = Modifier) {
             when (currentScreen)
             {
                 AppScreen.Home -> Text("Home")
-                AppScreen.LogIn -> Login()
+                AppScreen.LogIn -> Login ( onNavigate = {
+                    currentScreen = it
+                })
                 AppScreen.SignUp -> Text("SignUp")
                 AppScreen.Sleep -> Text("Sleep")
                 AppScreen.Social -> Text("Social")

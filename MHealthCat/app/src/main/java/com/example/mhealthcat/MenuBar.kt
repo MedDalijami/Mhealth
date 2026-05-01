@@ -66,7 +66,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 Triple("Šport in aktivnost", "\uD83D\uDC5F", AppScreen.Sport),
                 Triple("Splošno počutje", "\uD83E\uDEC2", AppScreen.Wellbeing)
             )
-            DropDownMenu(
+            CreateDropDownMenu(
                 expended = showNavMenu,
                 onDismissRequest = { showNavMenu = false },
                 items = functionalityList,
@@ -101,7 +101,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 Triple("Nastavitve", "⚙\uFE0F", AppScreen.Settings)
             )
 
-            DropDownMenu(
+            CreateDropDownMenu(
                 expended = showUserMenu,
                 onDismissRequest = {showUserMenu = false},
                 items = userMenuList,
@@ -118,7 +118,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
 
 
 @Composable
-fun DropDownMenu(
+fun CreateDropDownMenu(
     expended: Boolean,
     onDismissRequest: () -> Unit,
     items: List<Triple<String, String, AppScreen>>,
@@ -140,6 +140,7 @@ fun DropDownMenu(
                     easing = LinearEasing
                 )
             )
+            .fillMaxWidth(0.8f)
     ) {
 
         items.forEachIndexed { index, (label, emoji, state) ->
@@ -150,13 +151,13 @@ fun DropDownMenu(
                     ) {
                         Text(
                             text = emoji,
-                            fontSize = 16.sp,
+                            fontSize = 25.sp,
                             modifier = Modifier.padding(end = 10.dp)
                         )
                         Text(
                             text = label,
                             fontFamily = pixelFont,
-                            fontSize = 9.sp,
+                            fontSize = 15.sp,
                             color = RetroTeal,
                             letterSpacing = 1.sp
                         )

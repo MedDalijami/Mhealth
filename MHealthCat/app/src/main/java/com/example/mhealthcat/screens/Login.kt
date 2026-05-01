@@ -1,14 +1,20 @@
-package com.example.mhealthcat.Screens
+package com.example.mhealthcat.screens
 
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,17 +25,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mhealthcat.AppScreen
 import com.example.mhealthcat.CreateImage
 import com.example.mhealthcat.R
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
+import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.roboto
 
 
 @Composable
-fun Login () {
+fun Login (onNavigate: (AppScreen) -> Unit) {
+    var password by remember { mutableStateOf("") }
+    val isValidPassword = password.length >= 8 && password.any {it.isDigit()}
+    var email by remember { mutableStateOf("") }
+    val isValidEmail = email.contains("@")
+    var errorMsg by remember {mutableStateOf(false)}
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -44,10 +59,7 @@ fun Login () {
                 .aspectRatio(1f)
         )
 
-        Column () {
-            var email by remember { mutableStateOf("") }
-            val isValidEmail = email.contains("@")
-
+        Column {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -84,10 +96,8 @@ fun Login () {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
+                    .padding(horizontal = 20.dp)
             )
-            var password by remember { mutableStateOf("") }
-            val isValidPassword = password.length >= 8 && password.any {it.isDigit()}
 
             OutlinedTextField(
                 value = password,
@@ -125,8 +135,70 @@ fun Login () {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 30.dp)
+                    .padding(horizontal = 20.dp)
             )
+        }
+
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+
+            ) {
+                OutlinedButton(
+                    modifier = Modifier.weight(0.45f),
+                    onClick = {
+                        if (isValidEmail && isValidPassword) {
+                            onNavigate(AppScreen.Home)
+                            errorMsg = false
+                        }
+                        else {
+                            errorMsg = true
+                        }
+                    },
+                    border = BorderStroke(width = 3.dp, color = RetroPixelBorder)
+                ) {
+                    Text(
+                        text = "Vpiši se",
+                        fontSize = 20.sp,
+                        fontFamily = roboto,
+                        color = Color.White
+                    )
+                }
+                Card(
+                    modifier = Modifier
+                        .weight(0.1f)
+                ) { }
+
+                OutlinedButton(
+                    modifier = Modifier.weight(0.45f),
+                    onClick = {
+                        onNavigate(AppScreen.SignUp)
+                    },
+                    border = BorderStroke(width = 3.dp, color = RetroPixelBorder)
+                ) {
+                    Text(
+                        text = "Registriraj se",
+                        fontSize = 20.sp,
+                        fontFamily = roboto,
+                        color = Color.White
+                    )
+                }
+            }
+            if (errorMsg) {
+                Text(
+                    text = "Prosim vpišite pravilne podatke",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    fontSize = 15.sp,
+                    fontFamily = roboto,
+                    color = Color.Red,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 
@@ -136,6 +208,14 @@ fun Login () {
 @Composable
 fun GreetingPreview() {
     MHealthCatTheme {
-        Login()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Login(
+                onNavigate = { state ->
+                    Log.d("Navigation","Next screen $state")
+                })
+        }
     }
 }
