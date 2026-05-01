@@ -17,13 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mhealthcat.screens.Login
+import com.example.mhealthcat.functionsAndLibraries.AppScreen
+import com.example.mhealthcat.screens.LogIn
+import com.example.mhealthcat.screens.SignUp
 
 
 // Functions like pseudo "State machine"
-enum class AppScreen {
-    Home, LogIn, SignUp, Sleep, Social, Sport, Wellbeing, Settings, User
-}
 
 @Composable
 fun Screen(modifier: Modifier = Modifier) {
@@ -45,10 +44,12 @@ fun Screen(modifier: Modifier = Modifier) {
             when (currentScreen)
             {
                 AppScreen.Home -> Text("Home")
-                AppScreen.LogIn -> Login ( onNavigate = {
-                    currentScreen = it
-                })
-                AppScreen.SignUp -> Text("SignUp")
+
+
+                AppScreen.LogIn -> LogIn ( onNavigate = { currentScreen = it } )
+
+
+                AppScreen.SignUp -> SignUp(onNavigate = {currentScreen = it})
                 AppScreen.Sleep -> Text("Sleep")
                 AppScreen.Social -> Text("Social")
                 AppScreen.Sport -> Text("Sports")

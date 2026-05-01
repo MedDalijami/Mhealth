@@ -1,11 +1,8 @@
 package com.example.mhealthcat
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -29,11 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mhealthcat.functionsAndLibraries.AppScreen
+import com.example.mhealthcat.functionsAndLibraries.CreateProfileImage
 import com.example.mhealthcat.ui.theme.RetroDark
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
@@ -54,8 +50,11 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 .weight(0.2f)
         )
         {
-            CreateImage(
-                onItemClick = { showNavMenu = !showNavMenu},
+            CreateProfileImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f)
+                    .clickable { showNavMenu = !showNavMenu },
                 imgRes = R.drawable.baseline_menu_24,
                 description = "Functions Menu"
             )
@@ -90,8 +89,11 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 .weight(0.2f)
         ) {
 
-            CreateImage(
-                onItemClick = {showUserMenu = !showUserMenu },
+            CreateProfileImage(
+                modifier = Modifier.fillMaxSize()
+                    .fillMaxSize()
+                    .aspectRatio(1f)
+                    .clickable {showUserMenu = !showUserMenu },
                 imgRes = R.drawable.user_menu,
                 description = "User Menu"
             )
@@ -186,29 +188,3 @@ fun CreateDropDownMenu(
     }
 }
 
-@Composable
-fun CreateImage (
-    onItemClick: () -> Unit = {},
-    color: Color = RetroPixelBorder,
-    imgRes: Int,
-    description: String,
-    modifier: Modifier = Modifier
-        .fillMaxSize()
-        .aspectRatio(1f)
-        .clickable{ onItemClick()}
-
-) {
-    Surface(
-        modifier = modifier,
-        shape = CircleShape,
-        border = BorderStroke(3.dp, color)
-
-    ) {
-        Image(
-            painter = painterResource(id = imgRes),
-            modifier = Modifier.padding(5.dp),
-            contentDescription = description,
-            colorFilter = ColorFilter.tint(color)
-        )
-    }
-}
