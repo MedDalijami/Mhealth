@@ -25,8 +25,7 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Sleep() {
-    //To test the time data
+fun Social() {
     var showTime by remember { mutableStateOf(false) }
 
     val timePickerState = rememberTimePickerState(
@@ -50,7 +49,7 @@ fun Sleep() {
 
         CreateTimeDial(
             onClick = {showTime = true},
-            setButtonText = "Zabeleži spanec",
+            setButtonText = "Zabeleži druženje",
             timePickerState = timePickerState
         )
     }
@@ -62,29 +61,24 @@ fun Sleep() {
                 timePickerState.minute = 0
                 showTime = false
             },
-            onConfirm = {
-                showTime = false
-            },
-            alertTitle = "Ali želite zabeležiti spanec?",
-            alertText = "Vaš celoten čas spanca znaša %d ur in %d minut".format(
+            alertTitle = "Ali želite zabeležiti druženje?",
+            alertText = "Vaš čas druženja je %d ur in %d minut".format(
                 timePickerState.hour,
                 timePickerState.minute
             )
         )
     }
-
 }
-
 
 @Preview(showBackground = true)
 @Composable
-fun SleepPreview() {
+fun SocialPreview() {
     MHealthCatTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Sleep()
+            Social()
         }
     }
 }
