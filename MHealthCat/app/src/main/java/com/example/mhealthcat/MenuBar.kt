@@ -34,7 +34,7 @@ import com.example.mhealthcat.ui.theme.RetroDark
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroTeal
-import com.example.mhealthcat.ui.theme.pixelFont
+import com.example.mhealthcat.ui.theme.roboto
 
 @Composable
 fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
@@ -158,7 +158,7 @@ fun CreateDropDownMenu(
                         )
                         Text(
                             text = label,
-                            fontFamily = pixelFont,
+                            fontFamily = roboto,
                             fontSize = 15.sp,
                             color = RetroTeal,
                             letterSpacing = 1.sp

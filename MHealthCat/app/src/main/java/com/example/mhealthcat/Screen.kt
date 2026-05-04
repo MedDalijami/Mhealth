@@ -20,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import com.example.mhealthcat.functionsAndLibraries.AppScreen
 import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
-
+import com.example.mhealthcat.screens.Sleep
 
 
 @Composable
 fun Screen(modifier: Modifier = Modifier) {
-    var currentScreen by remember { mutableStateOf(AppScreen.LogIn) }
+    var currentScreen by remember { mutableStateOf(AppScreen.Home) }
 
     Box(
         modifier = modifier
@@ -44,12 +44,12 @@ fun Screen(modifier: Modifier = Modifier) {
             {
                 AppScreen.Home -> Text("Home")
 
-
                 AppScreen.LogIn -> LogIn ( onNavigate = { currentScreen = it } )
 
-
                 AppScreen.SignUp -> SignUp(onNavigate = {currentScreen = it})
-                AppScreen.Sleep -> Text("Sleep")
+
+                AppScreen.Sleep -> Sleep()
+
                 AppScreen.Social -> Text("Social")
                 AppScreen.Sport -> Text("Sports")
                 AppScreen.Wellbeing -> Text("Wellbeing")

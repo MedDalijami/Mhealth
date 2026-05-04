@@ -11,24 +11,43 @@ import com.example.mhealthcat.R
 // Set of Material typography styles to start with
 
 // Used pixelFont
-val pixelFont = FontFamily(Font(R.font.press_start_2p))
 val roboto = FontFamily(Font(R.font.roboto_regular))
 val Typography = Typography(
+
     bodyLarge = TextStyle(
-        fontFamily = pixelFont,
+        fontFamily = roboto,
         fontWeight = FontWeight.Normal,
-        fontSize = 9.sp,
-        lineHeight = 18.sp,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
     ),
     bodyMedium = TextStyle(
-        fontFamily = pixelFont,
-        fontSize = 8.sp,
+        fontFamily = roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+    ),
+    bodySmall = TextStyle(
+        fontFamily = roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+    ),
+    labelLarge = TextStyle(
+        fontFamily = roboto,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+    ),
+    labelMedium = TextStyle(
+        fontFamily = roboto,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
         lineHeight = 16.sp,
     ),
     labelSmall = TextStyle(
-        fontFamily = pixelFont,
-        fontSize = 7.sp,
-        lineHeight = 14.sp,
+        fontFamily = roboto,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
     ),
-
 )
