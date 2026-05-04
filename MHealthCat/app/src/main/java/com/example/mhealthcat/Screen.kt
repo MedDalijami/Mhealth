@@ -22,7 +22,6 @@ import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
 
 
-// Functions like pseudo "State machine"
 
 @Composable
 fun Screen(modifier: Modifier = Modifier) {
