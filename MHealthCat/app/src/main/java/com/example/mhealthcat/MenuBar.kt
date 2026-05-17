@@ -65,10 +65,10 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 Triple("Šport in aktivnost", "\uD83D\uDC5F", AppScreen.Sport),
                 Triple("Splošno počutje", "\uD83E\uDEC2", AppScreen.Wellbeing)
             )
-            CreateDropDownMenu(
+            CreateBottomMenu(
                 expended = showNavMenu,
                 onDismissRequest = { showNavMenu = false },
-                items = functionalityList,
+                itemsList = functionalityList,
                 onItemClick = { state ->
                     onNavigate(state)
                     showNavMenu = false
@@ -103,10 +103,10 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 Triple("Nastavitve", "⚙\uFE0F", AppScreen.Settings)
             )
 
-            CreateDropDownMenu(
+            CreateBottomMenu(
                 expended = showUserMenu,
                 onDismissRequest = {showUserMenu = false},
-                items = userMenuList,
+                itemsList = userMenuList,
                 onItemClick = { state ->
                     onNavigate(state)
                     showUserMenu = false
@@ -120,10 +120,10 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
 
 
 @Composable
-fun CreateDropDownMenu(
+fun CreateBottomMenu(
     expended: Boolean,
     onDismissRequest: () -> Unit,
-    items: List<Triple<String, String, AppScreen>>,
+    itemsList: List<Triple<String, String, AppScreen>>,
     onItemClick: (AppScreen) -> Unit,
 ) {
     DropdownMenu(
@@ -145,7 +145,7 @@ fun CreateDropDownMenu(
             .fillMaxWidth(0.8f)
     ) {
 
-        items.forEachIndexed { index, (label, emoji, state) ->
+        itemsList.forEachIndexed { index, (label, emoji, state) ->
             DropdownMenuItem(
                 text = {
                     Row(
@@ -178,7 +178,7 @@ fun CreateDropDownMenu(
                         }
                     )
             )
-            if (index != items.lastIndex) {
+            if (index != itemsList.lastIndex) {
                 HorizontalDivider(
                     color = RetroPixelBorder.copy(alpha = 0.4f),
                     thickness = 1.dp

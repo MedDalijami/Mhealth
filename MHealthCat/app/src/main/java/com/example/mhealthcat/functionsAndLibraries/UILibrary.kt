@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -19,10 +23,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,11 +44,6 @@ import coil3.compose.AsyncImage
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.roboto
-import org.w3c.dom.Text
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
 
 
 // COMPOSABLES
@@ -240,12 +239,74 @@ fun CreateAlert (
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateSelectMenu (
+    modifier: Modifier = Modifier,
+    selectedItem: String,
+    selectItemsList: List<String>,
+    onSelect: (String) -> Unit,
+    label: String = ""
+) {
+    var expended by remember { mutableStateOf(false) }
+    Column(
+        modifier = modifier
+    ) {
+        ExposedDropdownMenuBox(
+            expanded = expended,
+            // this checks if user clicked outside select and if so sets the value to false
+            onExpandedChange = { expended = it },
+        ) {
+            OutlinedTextField(
+                value = selectedItem,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(label) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon( expanded = expended )
+                },
+                modifier = Modifier
+                    .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true)
+            )
 
-// FUNCTIONS
+            ExposedDropdownMenu(
+                expanded = expended,
+                onDismissRequest = {expended = false}
+            ) {
+                selectItemsList.forEach { selectItem ->
+                    DropdownMenuItem(
+                        text = { Text(selectItem) },
+                        onClick = {onSelect(selectItem)
+                            expended = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
 
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
+        }
+    }
+}
+
+@Composable
+fun CreateTextBoxNonError (
+    value: String,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    onValueChange: (String) -> Unit,
+    label: String = ""
+) {
+
+    OutlinedTextField(
+        value = value,
+        placeholder = {
+            Text(
+                text = placeholder
+            )
+        },
+        onValueChange = { onValueChange(it) },
+        label = { Text(label) },
+        modifier = modifier)
 }
 
 
@@ -254,9 +315,7 @@ fun convertMillisToDate(millis: Long): String {
 
 
 
-
-
-
+// FUNCTIONS
 
 
 // CLASSES
