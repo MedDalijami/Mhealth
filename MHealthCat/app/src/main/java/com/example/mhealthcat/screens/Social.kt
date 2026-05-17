@@ -1,16 +1,13 @@
 package com.example.mhealthcat.screens
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
@@ -23,24 +20,55 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mhealthcat.functionsAndLibraries.CreateAlert
+import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
 import com.example.mhealthcat.functionsAndLibraries.CreateSelectMenu
 import com.example.mhealthcat.functionsAndLibraries.CreateTextBoxNonError
 import com.example.mhealthcat.functionsAndLibraries.CreateTimeDial
+import com.example.mhealthcat.functionsAndLibraries.SocialFormState
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-import com.example.mhealthcat.ui.theme.roboto
+import com.example.mhealthcat.functionsAndLibraries.CreateStepper
+import com.example.mhealthcat.functionsAndLibraries.CreateCommentBox
+
+@Composable
+fun Social() {
+
+    var showForm by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+
+
+        if (!showForm)
+        CreateOutlineButton(
+            onClick = {showForm = true},
+            buttonText = "Zabeleži novo druženje"
+        )
+        else {
+            CreateSocialForm(
+                onSubmit = {showForm = false}
+            )
+        }
+    }
+
+
+
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Social() {
-    var showTime by remember { mutableStateOf(false) }
+fun CreateSocialForm (
+    onSubmit: () -> Unit
+) {
+    var showAlert by remember { mutableStateOf(false) }
+    var formState by remember { mutableStateOf(SocialFormState()) }
 
-    var socialInteraction by remember { mutableStateOf("Osebno") }
-    val socialInteractionTypeList = listOf("Osebno", "Klic", "Skupinsko","Drugo")
-    var socialInteractionOther by remember { mutableStateOf("") }
-
-    var people by remember { mutableStateOf("Prijatelji") }
+    val socialInteractionTypeList = listOf("Osebno", "Klic", "Skupinsko", "Drugo")
     val peopleList = listOf("Prijatelji", "Družina", "Neznanci")
 
     val timePickerState = rememberTimePickerState(
@@ -51,65 +79,98 @@ fun Social() {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 30.dp),
+            .padding(horizontal = 30.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
     ) {
-        Column(
-            modifier = Modifier
-                .padding(bottom = 30.dp),
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
-            CreateSelectMenu(
-                selectedItem = socialInteraction,
-                selectItemsList = socialInteractionTypeList,
-                onSelect = { socialInteraction = it },
-                label = "Tip druženja"
+        CreateSelectMenu(
+            modifier = Modifier.fillMaxWidth(),
+            selectedItem = formState.socialInteraction,
+            selectItemsList = socialInteractionTypeList,
+            onSelect = { formState = formState.copy(socialInteraction = it) },
+            label = "Tip druženja"
+        )
+
+        if (formState.isOther) {
+            CreateTextBoxNonError(
+                modifier = Modifier.fillMaxWidth(),
+                value = formState.socialInteractionOther,
+                placeholder = "Vpišite tip druženja",
+                onValueChange = { formState = formState.copy(socialInteractionOther = it) },
             )
-
-            if (socialInteraction.equals("Drugo")) {
-                CreateTextBoxNonError(
-                    value = socialInteractionOther,
-                    placeholder = "Vpišite tip druženja",
-                    onValueChange = {socialInteractionOther = it}
-                )
-            }
-
-            CreateSelectMenu(
-                selectedItem = people,
-                selectItemsList = peopleList,
-                onSelect = { people = it },
-                label = "S kom ste se družili?"
-            )
-
-
-
-
         }
 
-        CreateTimeDial(
-            onClick = {showTime = true},
-            setButtonText = "Zabeleži druženje",
-            timePickerState = timePickerState
+        CreateSelectMenu(
+            modifier = Modifier.fillMaxWidth(),
+            selectedItem = formState.people,
+            selectItemsList = peopleList,
+            onSelect = { formState = formState.copy(people = it) },
+            label = "S kom ste se družili?"
         )
-    }
 
-    if (showTime) {
+        CreateStepper(
+            modifier = Modifier.padding(vertical = 20.dp).fillMaxWidth(),
+            label = "Število prisotnih:",
+            value = formState.numberOfPeople,
+            valueIncrease = { formState = formState.increaseNumberOfPeople() },
+            valueDecrease =  {formState = formState.decreaseNumberOfPeople()}
+        )
+
+        CreateCommentBox(
+            value = formState.comment,
+            label = "Komentar in občutki ob druženju",
+            onValueChange = {formState = formState.copy(comment = it)}
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text("Čas druženja:")
+        }
+
+
+
+
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CreateTimeDial(
+                onClick = { showAlert = true },
+                setButtonText = "Zabeleži druženje",
+                timePickerState = timePickerState
+            )
+        }
+    }
+    if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                timePickerState.hour = 0
-                timePickerState.minute = 0
-                showTime = false
+                formState = SocialFormState()
+                showAlert = false
+            },
+            onConfirm = {
+                onSubmit()
+                showAlert = false
             },
             alertTitle = "Ali želite zabeležiti druženje?",
-            alertText = "Vaš čas druženja je %d ur in %d minut".format(
+            alertText = "Vaš čas druženja je %d ur in %d minut tipa %s s/z %s, ki jih je bilo %d komentar: %s".format(
                 timePickerState.hour,
-                timePickerState.minute
+                timePickerState.minute,
+                formState.socialInteraction,
+                formState.people,
+                formState.numberOfPeople,
+                formState.comment
             )
         )
     }
+
 }
+
+
+
 
 
 

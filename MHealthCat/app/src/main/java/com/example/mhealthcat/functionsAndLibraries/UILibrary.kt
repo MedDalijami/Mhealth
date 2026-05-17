@@ -3,10 +3,13 @@ package com.example.mhealthcat.functionsAndLibraries
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -14,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,13 +33,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -220,7 +228,7 @@ fun CreateAlert (
         text = {
             Text(alertText)
         },
-        onDismissRequest = {onDismissRequest},
+        onDismissRequest = onDismissRequest,
         confirmButton = {
             TextButton(
                 onClick = onConfirm
@@ -246,7 +254,8 @@ fun CreateSelectMenu (
     selectedItem: String,
     selectItemsList: List<String>,
     onSelect: (String) -> Unit,
-    label: String = ""
+    label: String = "",
+    onFocusChange: (FocusState) -> Unit = {}
 ) {
     var expended by remember { mutableStateOf(false) }
     Column(
@@ -267,6 +276,8 @@ fun CreateSelectMenu (
                 },
                 modifier = Modifier
                     .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true)
+                    .fillMaxWidth()
+                    .onFocusChanged { onFocusChange(it) }
             )
 
             ExposedDropdownMenu(
@@ -294,6 +305,7 @@ fun CreateTextBoxNonError (
     modifier: Modifier = Modifier,
     placeholder: String = "",
     onValueChange: (String) -> Unit,
+    onFocusChange: (FocusState) -> Unit = {},
     label: String = ""
 ) {
 
@@ -306,10 +318,101 @@ fun CreateTextBoxNonError (
         },
         onValueChange = { onValueChange(it) },
         label = { Text(label) },
-        modifier = modifier)
+        modifier = modifier.onFocusChanged { onFocusChange(it) })
 }
 
 
+@Composable
+fun CreateCommentBox(
+    modifier: Modifier = Modifier,
+    value: String = "",
+    label: String = "",
+    placeholder: String = "Vpišite komentar...",
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        minLines = 2,
+        maxLines = 8,
+        modifier = modifier.fillMaxWidth()
+    )
+}
+@Composable
+fun CreateStepper(
+    modifier: Modifier = Modifier,
+    label: String = "",
+    value: Int,
+    minValue: Int = 1,
+    maxValue: Int = Int.MAX_VALUE,
+    step: Int = 1,
+    valueIncrease: () -> Unit,
+    valueDecrease: () -> Unit
+) {
+
+    Column(
+        modifier = modifier
+    ) {
+        if (label.isNotEmpty()){
+            Text(text = label)
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(top = 15.dp)
+                .fillMaxWidth()
+
+        ) {
+            FilledIconButton(
+                onClick = {
+                    if (value - step >= minValue){
+                        valueDecrease()
+                    }
+                },
+                enabled = value -step >= minValue
+            ) {
+                Text(
+                    text = "−",
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
+            }
+
+            Text(
+                text = value.toString(),
+                fontSize = 25.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .widthIn(min = 40.dp)
+            )
+
+            FilledIconButton(
+                onClick = {
+                    if (value + step <= maxValue){
+                        valueIncrease()
+                    }
+                },
+                enabled = value + step <= maxValue
+            ) {
+                Text(
+                    text = "+",
+                    fontSize = 35.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
+            }
+
+        }
+    }
+
+
+
+}
 
 
 
@@ -319,6 +422,21 @@ fun CreateTextBoxNonError (
 
 
 // CLASSES
+
+data class SocialFormState(
+    val socialInteraction: String = "Osebno",
+    val socialInteractionOther: String = "",
+    val people: String = "Prijatelji",
+    val numberOfPeople: Int = 1,
+    val comment: String = " ",
+) {
+    val isOther get() = socialInteraction == "Drugo"
+
+    fun increaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople + 1)
+    fun decreaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople - 1)
+
+
+}
 data class SignUpFormState(
     val name: String = "",
     val lastName: String = "",
