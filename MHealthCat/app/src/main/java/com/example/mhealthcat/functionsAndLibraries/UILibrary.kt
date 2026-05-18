@@ -3,12 +3,14 @@ package com.example.mhealthcat.functionsAndLibraries
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
@@ -18,6 +20,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -28,7 +31,6 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,14 +45,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.mhealthcat.R
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
+import com.example.mhealthcat.ui.theme.RetroYellow
 import com.example.mhealthcat.ui.theme.roboto
 
 
@@ -342,7 +345,7 @@ fun CreateCommentBox(
 @Composable
 fun CreateStepper(
     modifier: Modifier = Modifier,
-    label: String = "",
+    title: String = "",
     value: Int,
     minValue: Int = 1,
     maxValue: Int = Int.MAX_VALUE,
@@ -354,8 +357,8 @@ fun CreateStepper(
     Column(
         modifier = modifier
     ) {
-        if (label.isNotEmpty()){
-            Text(text = label)
+        if (title.isNotEmpty()){
+            Text(text = title)
         }
 
         Row(
@@ -374,11 +377,12 @@ fun CreateStepper(
                 },
                 enabled = value -step >= minValue
             ) {
-                Text(
-                    text = "−",
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
+                Icon(
+                    painter = painterResource(R.drawable.remove),
+                    contentDescription = "-",
+                    tint = Color.White,
+                    modifier = Modifier.size(35.dp)
+
                 )
             }
 
@@ -399,20 +403,68 @@ fun CreateStepper(
                 },
                 enabled = value + step <= maxValue
             ) {
-                Text(
-                    text = "+",
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
+
+                Icon(
+                    painter = painterResource(R.drawable.add),
+                    contentDescription = "+",
+                    tint = Color.White,
+                    modifier = Modifier.size(35.dp)
+
                 )
             }
 
         }
     }
-
-
-
 }
+
+
+@Composable
+fun CreateStarRating(
+    modifier: Modifier = Modifier,
+    title: String = "Ocena:",
+    rating: Int = 1,
+    starRange: IntRange = (1..5),
+    starIconModifier: Modifier = Modifier,
+    onRatingChange: (Int) -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+
+        if (title.isNotEmpty()) {
+            Text(title)
+        }
+
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                starRange.forEach { star ->
+
+                    Icon(
+                        painter = painterResource(
+                            if (star > rating) R.drawable.star
+                            else R.drawable.star_filled
+                        ),
+                        contentDescription = "Zvezda $star",
+                        tint = RetroYellow,
+                        modifier = starIconModifier.clickable {
+                            onRatingChange(star)
+                        }
+                    )
+
+
+                }
+
+            }
+        }
+    }
+}
+
 
 
 
@@ -423,12 +475,23 @@ fun CreateStepper(
 
 // CLASSES
 
+data class SleepForm(
+    val rating: Int = 1,
+    val hours: Int = 0,
+    val minutes: Int = 0,
+    val comment: String = " "
+)
+
 data class SocialFormState(
     val socialInteraction: String = "Osebno",
     val socialInteractionOther: String = "",
     val people: String = "Prijatelji",
     val numberOfPeople: Int = 1,
     val comment: String = " ",
+    val rating: Int = 1,
+    val hours: Int = 0,
+    val minutes: Int = 0
+
 ) {
     val isOther get() = socialInteraction == "Drugo"
 

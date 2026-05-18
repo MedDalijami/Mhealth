@@ -1,11 +1,11 @@
 package com.example.mhealthcat.screens
 
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,36 +20,86 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mhealthcat.functionsAndLibraries.CreateAlert
+import com.example.mhealthcat.functionsAndLibraries.CreateCommentBox
+import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
+import com.example.mhealthcat.functionsAndLibraries.CreateStarRating
 import com.example.mhealthcat.functionsAndLibraries.CreateTimeDial
+import com.example.mhealthcat.functionsAndLibraries.SleepForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Sleep() {
-    //To test the time data
+
+    var showForm by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+
+
+        if (!showForm) {
+            // Basic screen
+            CreateOutlineButton(
+                onClick = { showForm = true },
+                buttonText = "Zabeleži novo spanje"
+            )
+        } else {
+            // form
+            CreateTimeForm(onConfirm = {showForm = false})
+        }
+    }
+
+
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun CreateTimeForm(
+    onConfirm: () -> Unit
+) {
     var showTime by remember { mutableStateOf(false) }
+    var sleepForm by remember { mutableStateOf(SleepForm()) }
 
     val timePickerState = rememberTimePickerState(
-        initialHour = 0,
-        initialMinute = 0,
+        initialHour = sleepForm.hours,
+        initialMinute = sleepForm.minutes,
         is24Hour = true
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 60.dp),
+            .padding(horizontal = 30.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Bottom
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
-        ) {}
+
+        CreateStarRating(
+            title = "Ocenite svoj spanec",
+            rating = sleepForm.rating,
+            onRatingChange = {sleepForm = sleepForm.copy(rating = it)},
+            starIconModifier = Modifier.size(40.dp)
+        )
+
+        CreateCommentBox(
+            modifier = Modifier.padding(vertical = 15.dp),
+            value = sleepForm.comment,
+            label = "Prosim opišite in komentirajte svoj spanec",
+            onValueChange = {sleepForm = sleepForm.copy(comment = it)}
+        )
 
         CreateTimeDial(
-            onClick = {showTime = true},
+            onClick = {
+                sleepForm = sleepForm.copy(
+                    hours = timePickerState.hour,
+                    minutes = timePickerState.minute
+                )
+                showTime = true
+                      },
             setButtonText = "Zabeleži spanec",
             timePickerState = timePickerState
         )
@@ -58,21 +108,25 @@ fun Sleep() {
     if (showTime) {
         CreateAlert(
             onDismissRequest = {
+                sleepForm = SleepForm()
                 timePickerState.hour = 0
                 timePickerState.minute = 0
                 showTime = false
             },
             onConfirm = {
+                onConfirm()
                 showTime = false
             },
             alertTitle = "Ali želite zabeležiti spanec?",
-            alertText = "Vaš celoten čas spanca znaša %d ur in %d minut".format(
-                timePickerState.hour,
-                timePickerState.minute
+            alertText = ("Vaš celoten čas spanca znaša %d ur in %d minut " +
+                    "ocenili ste spanec z %d ⭐ in pustili komentar: %s").format(
+                sleepForm.hours,
+                sleepForm.minutes,
+                sleepForm.rating,
+                sleepForm.comment
             )
         )
     }
-
 }
 
 
