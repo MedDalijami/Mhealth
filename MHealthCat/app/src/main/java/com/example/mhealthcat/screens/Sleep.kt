@@ -61,7 +61,7 @@ fun Sleep() {
 private fun CreateTimeForm(
     onConfirm: () -> Unit
 ) {
-    var showTime by remember { mutableStateOf(false) }
+    var showAlert by remember { mutableStateOf(false) }
     var sleepForm by remember { mutableStateOf(SleepForm()) }
 
     val timePickerState = rememberTimePickerState(
@@ -77,7 +77,6 @@ private fun CreateTimeForm(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
-
         CreateStarRating(
             title = "Ocenite svoj spanec",
             rating = sleepForm.rating,
@@ -98,24 +97,24 @@ private fun CreateTimeForm(
                     hours = timePickerState.hour,
                     minutes = timePickerState.minute
                 )
-                showTime = true
+                showAlert = true
                       },
             setButtonText = "Zabeleži spanec",
             timePickerState = timePickerState
         )
     }
 
-    if (showTime) {
+    if (showAlert) {
         CreateAlert(
             onDismissRequest = {
                 sleepForm = SleepForm()
                 timePickerState.hour = 0
                 timePickerState.minute = 0
-                showTime = false
+                showAlert = false
             },
             onConfirm = {
                 onConfirm()
-                showTime = false
+                showAlert = false
             },
             alertTitle = "Ali želite zabeležiti spanec?",
             alertText = ("Vaš celoten čas spanca znaša %d ur in %d minut " +

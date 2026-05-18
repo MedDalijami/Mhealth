@@ -55,6 +55,7 @@ import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.RetroYellow
 import com.example.mhealthcat.ui.theme.roboto
+import okhttp3.internal.http.StatusLine
 
 
 // COMPOSABLES
@@ -330,6 +331,8 @@ fun CreateCommentBox(
     modifier: Modifier = Modifier,
     value: String = "",
     label: String = "",
+    minLines: Int = 2,
+    maxLines: Int = 8,
     placeholder: String = "Vpišite komentar...",
     onValueChange: (String) -> Unit
 ) {
@@ -337,8 +340,8 @@ fun CreateCommentBox(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        minLines = 2,
-        maxLines = 8,
+        minLines = minLines,
+        maxLines = maxLines,
         modifier = modifier.fillMaxWidth()
     )
 }
@@ -474,6 +477,14 @@ fun CreateStarRating(
 
 
 // CLASSES
+data class SportForm(
+    val rating: Int = 1,
+    val hours: Int = 0,
+    val minutes: Int = 0,
+    val activity: String = " ",
+    val comment: String = " "
+)
+
 
 data class SleepForm(
     val rating: Int = 1,

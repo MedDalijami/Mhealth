@@ -22,6 +22,7 @@ import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep
 import com.example.mhealthcat.screens.Social
+import com.example.mhealthcat.screens.Sports
 
 
 @Composable
@@ -53,7 +54,8 @@ fun Screen(modifier: Modifier = Modifier) {
 
                 AppScreen.Social -> Social()
 
-                AppScreen.Sport -> Text("Sports")
+                AppScreen.Sport -> Sports()
+
                 AppScreen.Wellbeing -> Text("Wellbeing")
                 AppScreen.Settings -> Text("Settings")
                 AppScreen.User -> Text("User")
