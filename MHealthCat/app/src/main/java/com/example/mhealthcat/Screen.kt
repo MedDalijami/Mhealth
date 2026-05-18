@@ -23,6 +23,7 @@ import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep
 import com.example.mhealthcat.screens.Social
 import com.example.mhealthcat.screens.Sports
+import com.example.mhealthcat.screens.Wellbeing
 
 
 @Composable
@@ -44,7 +45,7 @@ fun Screen(modifier: Modifier = Modifier) {
         ) {
             when (currentScreen)
             {
-                AppScreen.Home -> Text("Home")
+                AppScreen.Home -> Text("")
 
                 AppScreen.LogIn -> LogIn ( onNavigate = { currentScreen = it } )
 
@@ -56,7 +57,8 @@ fun Screen(modifier: Modifier = Modifier) {
 
                 AppScreen.Sport -> Sports()
 
-                AppScreen.Wellbeing -> Text("Wellbeing")
+                AppScreen.Wellbeing -> Wellbeing()
+
                 AppScreen.Settings -> Text("Settings")
                 AppScreen.User -> Text("User")
 

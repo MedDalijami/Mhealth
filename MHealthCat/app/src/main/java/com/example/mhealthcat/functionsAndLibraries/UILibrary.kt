@@ -477,6 +477,13 @@ fun CreateStarRating(
 
 
 // CLASSES
+data class WellbeingForm(
+    val rating: Int = 1,
+    val generalFeelings: String = " ",
+    val generalFears: String = " ",
+    val somethingGoodThatHappened: String = " "
+)
+
 data class SportForm(
     val rating: Int = 1,
     val hours: Int = 0,
