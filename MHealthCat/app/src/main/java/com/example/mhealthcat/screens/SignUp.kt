@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.layout.padding
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.R
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
 import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
@@ -32,9 +33,11 @@ import com.example.mhealthcat.ElementsAndClasses.CreateTextField
 import com.example.mhealthcat.forms.SignUpForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
+import com.example.mhealthcat.viewModels.NavigationViewModel
 
 @Composable
-fun SignUp (onNavigate: (AppScreen) -> Unit){
+fun SignUp (){
+    val navigationViewModel : NavigationViewModel = viewModel()
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -65,7 +68,7 @@ fun SignUp (onNavigate: (AppScreen) -> Unit){
             onClick = {
                 if (form.isValid) {
                     errorPresent = false
-                    onNavigate(AppScreen.LogIn)
+                    navigationViewModel.changeToScreen(AppScreen.LogIn)
                 } else {
                     errorPresent = true
                 }
@@ -168,7 +171,7 @@ fun SignUpPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            SignUp { null }
+            SignUp()
         }
     }
 }

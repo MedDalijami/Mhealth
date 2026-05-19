@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
 import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
 import com.example.mhealthcat.ui.theme.RetroDark
@@ -35,9 +36,13 @@ import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroTeal
 import com.example.mhealthcat.ui.theme.roboto
+import com.example.mhealthcat.viewModels.NavigationViewModel
 
 @Composable
-fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
+fun MenuBar() {
+    val navigationViewModel: NavigationViewModel = viewModel()
+
+
     var showNavMenu by remember { mutableStateOf(false) }
 
     var showUserMenu by remember { mutableStateOf(false) }
@@ -70,7 +75,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 onDismissRequest = { showNavMenu = false },
                 itemsList = functionalityList,
                 onItemClick = { state ->
-                    onNavigate(state)
+                    navigationViewModel.changeToScreen(state)
                     showNavMenu = false
                 }
             )
@@ -108,7 +113,7 @@ fun MenuBar(onNavigate: (AppScreen) -> Unit ) {
                 onDismissRequest = {showUserMenu = false},
                 itemsList = userMenuList,
                 onItemClick = { state ->
-                    onNavigate(state)
+                    navigationViewModel.changeToScreen(state)
                     showUserMenu = false
                 }
             )

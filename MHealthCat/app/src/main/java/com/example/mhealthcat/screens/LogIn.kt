@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.R
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
 import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
@@ -29,11 +30,12 @@ import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
 import com.example.mhealthcat.ElementsAndClasses.CreateTextField
 import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-
+import com.example.mhealthcat.viewModels.NavigationViewModel
 
 
 @Composable
-fun LogIn (onNavigate: (AppScreen) -> Unit) {
+fun LogIn () {
+    val navigationViewModel: NavigationViewModel = viewModel()
     var form by remember { mutableStateOf(LogInForm()) }
     var errorPresent by remember {mutableStateOf(false)}
 
@@ -70,7 +72,7 @@ fun LogIn (onNavigate: (AppScreen) -> Unit) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         if (form.isValid) {
-                            onNavigate(AppScreen.Home)
+                            navigationViewModel.changeToScreen(AppScreen.Home)
                             errorPresent = false
                         }
                         else {
@@ -86,7 +88,7 @@ fun LogIn (onNavigate: (AppScreen) -> Unit) {
 
                 CreateOutlineButton(
                     modifier = Modifier.weight(1f),
-                    onClick = { onNavigate(AppScreen.SignUp) },
+                    onClick = { navigationViewModel.changeToScreen(AppScreen.SignUp) },
                     buttonText = "Registriraj se"
                 )
             }
@@ -128,8 +130,7 @@ fun LoginPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LogIn(
-                onNavigate = { })
+            LogIn()
         }
     }
 }
