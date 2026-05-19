@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.ElementsAndClasses.CreateAlert
 import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
@@ -26,12 +28,15 @@ import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
 import com.example.mhealthcat.ElementsAndClasses.CreateTimeDial
 import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
+import com.example.mhealthcat.viewModels.SleepViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Sleep() {
 
-    var showForm by remember { mutableStateOf(false) }
+    val sleepViewModel: SleepViewModel = viewModel()
+    val showForm by sleepViewModel.showForm.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -41,15 +46,15 @@ fun Sleep() {
     ) {
 
 
-        if (!showForm) {
+        if (!showForm ) {
             // Basic screen
             CreateOutlineButton(
-                onClick = { showForm = true },
+                onClick = { sleepViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo spanje"
             )
         } else {
             // form
-            CreateTimeForm(onConfirm = {showForm = false})
+            CreateSleepForm(sleepViewModel = sleepViewModel)
         }
     }
 
@@ -58,11 +63,11 @@ fun Sleep() {
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun CreateTimeForm(
-    onConfirm: () -> Unit
+private fun CreateSleepForm(
+    sleepViewModel: SleepViewModel
 ) {
+    val sleepForm by sleepViewModel.sleepForm.collectAsState()
     var showAlert by remember { mutableStateOf(false) }
-    var sleepForm by remember { mutableStateOf(SleepForm()) }
 
     val timePickerState = rememberTimePickerState(
         initialHour = sleepForm.hours,
@@ -80,7 +85,7 @@ private fun CreateTimeForm(
         CreateStarRating(
             title = "Ocenite svoj spanec",
             rating = sleepForm.rating,
-            onRatingChange = {sleepForm = sleepForm.copy(rating = it)},
+            onRatingChange = { sleepViewModel.updateRating(it) },
             starIconModifier = Modifier.size(40.dp)
         )
 
@@ -88,17 +93,14 @@ private fun CreateTimeForm(
             modifier = Modifier.padding(vertical = 15.dp),
             value = sleepForm.comment,
             label = "Prosim opišite in komentirajte svoj spanec",
-            onValueChange = {sleepForm = sleepForm.copy(comment = it)}
+            onValueChange = { sleepViewModel.updateComment(it) }
         )
 
         CreateTimeDial(
-            onClick = {
-                sleepForm = sleepForm.copy(
-                    hours = timePickerState.hour,
-                    minutes = timePickerState.minute
-                )
+            onConfirmButtonClicked = {
+                sleepViewModel.updateTime(timePickerState.hour, timePickerState.minute)
                 showAlert = true
-                      },
+            },
             setButtonText = "Zabeleži spanec",
             timePickerState = timePickerState
         )
@@ -107,13 +109,13 @@ private fun CreateTimeForm(
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                sleepForm = SleepForm()
+                sleepViewModel.clearForm()
                 timePickerState.hour = 0
                 timePickerState.minute = 0
                 showAlert = false
             },
             onConfirm = {
-                onConfirm()
+               sleepViewModel.submitForm()
                 showAlert = false
             },
             alertTitle = "Ali želite zabeležiti spanec?",

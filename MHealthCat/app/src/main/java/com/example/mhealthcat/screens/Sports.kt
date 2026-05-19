@@ -105,7 +105,7 @@ fun CreateSportForm(onConfirm: () -> Unit) {
 
 
         CreateTimeDial(
-            onClick = {
+            onConfirmButtonClicked = {
                 sportForm = sportForm.copy(
                     hours = timePickerState.hour,
                     minutes = timePickerState.minute

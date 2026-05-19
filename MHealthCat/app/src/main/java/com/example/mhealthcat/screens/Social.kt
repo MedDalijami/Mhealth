@@ -161,7 +161,7 @@ fun CreateSocialForm(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CreateTimeDial(
-                onClick = {
+                onConfirmButtonClicked = {
                     socialForm = socialForm.copy(
                         hours = timePickerState.hour,
                         minutes = timePickerState.minute

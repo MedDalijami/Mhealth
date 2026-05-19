@@ -188,7 +188,7 @@ fun ShowUserErrorText(
 @Composable
 fun CreateTimeDial (
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onConfirmButtonClicked: () -> Unit,
     setButtonText: String,
     timePickerState: TimePickerState
 ) {
@@ -209,7 +209,7 @@ fun CreateTimeDial (
         )
 
         CreateOutlineButton(
-            onClick = onClick,
+            onClick = onConfirmButtonClicked,
             buttonText = setButtonText
         )
 
