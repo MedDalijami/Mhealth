@@ -11,10 +11,4 @@ data class SocialForm(
     val minutes: Int = 0
 
 ) {
-    val isOther get() = socialInteraction == "Drugo"
-
-    fun increaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople + 1)
-    fun decreaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople - 1)
-
-
 }

@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.ElementsAndClasses.CreateAlert
 import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.ElementsAndClasses.CreateSelectMenu
@@ -31,13 +33,14 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.ElementsAndClasses.CreateStepper
 import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
-
+import com.example.mhealthcat.viewModels.SocialViewModel
 
 
 @Composable
 fun Social() {
 
-    var showForm by remember { mutableStateOf(false) }
+    val socialViewModel: SocialViewModel = viewModel()
+    val showForm by socialViewModel.showForm.collectAsState()
 
     Column(
         modifier = Modifier
@@ -48,16 +51,14 @@ fun Social() {
 
 
         if (!showForm) {
-
-
             // Basic screen
             CreateOutlineButton(
-                onClick = { showForm = true },
+                onClick = { socialViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo druženje"
             )
         } else {
             CreateSocialForm(
-                onSubmit = { showForm = false }
+                socialViewModel = socialViewModel
             )
         }
     }
@@ -70,13 +71,13 @@ fun Social() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSocialForm(
-    onSubmit: () -> Unit
+    socialViewModel: SocialViewModel
 ) {
     var showAlert by remember { mutableStateOf(false) }
-    var socialForm by remember { mutableStateOf(SocialForm()) }
+    val socialForm by socialViewModel.socialForm.collectAsState()
 
-    val socialInteractionTypeList = listOf("Osebno", "Klic", "Skupinsko", "Drugo")
-    val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci")
+    val socialInteractionTypeList = socialViewModel.socialInteractionTypeList
+    val peopleList = socialViewModel.peopleList
 
     val timePickerState = rememberTimePickerState(
         initialHour = socialForm.hours,
@@ -95,16 +96,16 @@ fun CreateSocialForm(
             modifier = Modifier.fillMaxWidth(),
             selectedItem = socialForm.socialInteraction,
             selectItemsList = socialInteractionTypeList,
-            onSelect = { socialForm = socialForm.copy(socialInteraction = it) },
+            onSelect = { socialViewModel.updateSocialInteraction(it) },
             label = "Tip druženja"
         )
 
-        if (socialForm.isOther) {
+        if (socialViewModel.isOther()) {
             CreateTextBoxNonError(
                 modifier = Modifier.fillMaxWidth(),
                 value = socialForm.socialInteractionOther,
                 placeholder = "Vpišite tip druženja",
-                onValueChange = { socialForm = socialForm.copy(socialInteractionOther = it) },
+                onValueChange = { socialViewModel.updateSocialInteractionOther(it) },
             )
         }
 
@@ -112,14 +113,15 @@ fun CreateSocialForm(
             modifier = Modifier.fillMaxWidth(),
             selectedItem = socialForm.people,
             selectItemsList = peopleList,
-            onSelect = { socialForm = socialForm.copy(people = it) },
+            onSelect = { socialViewModel.updatePeople(it) },
             label = "S kom ste se družili?"
         )
 
         CreateCommentBox(
             value = socialForm.comment,
             label = "Komentar in občutki ob druženju",
-            onValueChange = { socialForm = socialForm.copy(comment = it) }
+            onValueChange = { socialViewModel.updateComment(it) },
+            modifier = Modifier.padding(vertical = 15.dp)
         )
 
         CreateStepper(
@@ -128,8 +130,8 @@ fun CreateSocialForm(
                 .fillMaxWidth(),
             title = "Število prisotnih:",
             value = socialForm.numberOfPeople,
-            valueIncrease = { socialForm = socialForm.increaseNumberOfPeople() },
-            valueDecrease = { socialForm = socialForm.decreaseNumberOfPeople() }
+            valueIncrease = { socialViewModel.increaseNumberOfPeople() },
+            valueDecrease = { socialViewModel.decreaseNumberOfPeople() }
         )
 
 
@@ -137,7 +139,7 @@ fun CreateSocialForm(
             modifier = Modifier
                 .fillMaxWidth(),
             rating = socialForm.rating,
-            onRatingChange = {socialForm = socialForm.copy(rating = it)},
+            onRatingChange = {socialViewModel.updateRating(it)},
             starIconModifier = Modifier.size(40.dp)
         )
 
@@ -151,8 +153,6 @@ fun CreateSocialForm(
         }
 
 
-
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -162,10 +162,7 @@ fun CreateSocialForm(
         ) {
             CreateTimeDial(
                 onConfirmButtonClicked = {
-                    socialForm = socialForm.copy(
-                        hours = timePickerState.hour,
-                        minutes = timePickerState.minute
-                    )
+                    socialViewModel.updateTime(timePickerState.hour, timePickerState.minute)
                     showAlert = true },
                 setButtonText = "Zabeleži druženje",
                 timePickerState = timePickerState
@@ -175,13 +172,13 @@ fun CreateSocialForm(
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                socialForm = SocialForm()
+                socialViewModel.clearForm()
                 showAlert = false
                 timePickerState.hour = 0
                 timePickerState.minute = 0
             },
             onConfirm = {
-                onSubmit()
+                socialViewModel.submitForm()
                 showAlert = false
             },
             alertTitle = "Ali želite zabeležiti druženje?",
