@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.mhealthcat.functionsAndLibraries.AppScreen
+import com.example.mhealthcat.ElementsAndClasses.AppScreen
 import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep

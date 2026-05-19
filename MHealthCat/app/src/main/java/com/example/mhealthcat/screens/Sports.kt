@@ -19,15 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mhealthcat.functionsAndLibraries.CreateAlert
-import com.example.mhealthcat.functionsAndLibraries.CreateCommentBox
-import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
-import com.example.mhealthcat.functionsAndLibraries.CreateStarRating
-import com.example.mhealthcat.functionsAndLibraries.CreateTimeDial
-import com.example.mhealthcat.functionsAndLibraries.SleepForm
-import com.example.mhealthcat.functionsAndLibraries.SportForm
+import com.example.mhealthcat.ElementsAndClasses.CreateAlert
+import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
+import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
+import com.example.mhealthcat.ElementsAndClasses.CreateTimeDial
+import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-import kotlin.math.min
 
 @Composable
 fun Sports() {

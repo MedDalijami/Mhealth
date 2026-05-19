@@ -21,16 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mhealthcat.functionsAndLibraries.CreateAlert
-import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
-import com.example.mhealthcat.functionsAndLibraries.CreateSelectMenu
-import com.example.mhealthcat.functionsAndLibraries.CreateTextBoxNonError
-import com.example.mhealthcat.functionsAndLibraries.CreateTimeDial
-import com.example.mhealthcat.functionsAndLibraries.SocialFormState
+import com.example.mhealthcat.ElementsAndClasses.CreateAlert
+import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.ElementsAndClasses.CreateSelectMenu
+import com.example.mhealthcat.ElementsAndClasses.CreateTextBoxNonError
+import com.example.mhealthcat.ElementsAndClasses.CreateTimeDial
+import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-import com.example.mhealthcat.functionsAndLibraries.CreateStepper
-import com.example.mhealthcat.functionsAndLibraries.CreateCommentBox
-import com.example.mhealthcat.functionsAndLibraries.CreateStarRating
+import com.example.mhealthcat.ElementsAndClasses.CreateStepper
+import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
+import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
 
 
 
@@ -73,7 +73,7 @@ fun CreateSocialForm(
     onSubmit: () -> Unit
 ) {
     var showAlert by remember { mutableStateOf(false) }
-    var socialForm by remember { mutableStateOf(SocialFormState()) }
+    var socialForm by remember { mutableStateOf(SocialForm()) }
 
     val socialInteractionTypeList = listOf("Osebno", "Klic", "Skupinsko", "Drugo")
     val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci")
@@ -175,7 +175,7 @@ fun CreateSocialForm(
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                socialForm = SocialFormState()
+                socialForm = SocialForm()
                 showAlert = false
                 timePickerState.hour = 0
                 timePickerState.minute = 0

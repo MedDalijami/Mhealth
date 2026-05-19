@@ -25,13 +25,13 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.layout.padding
 import com.example.mhealthcat.R
-import com.example.mhealthcat.functionsAndLibraries.AppScreen
-import com.example.mhealthcat.functionsAndLibraries.CreateProfileImage
-import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
-import com.example.mhealthcat.functionsAndLibraries.CreateTextField
-import com.example.mhealthcat.functionsAndLibraries.SignUpFormState
+import com.example.mhealthcat.ElementsAndClasses.AppScreen
+import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
+import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.ElementsAndClasses.CreateTextField
+import com.example.mhealthcat.forms.SignUpForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-import com.example.mhealthcat.functionsAndLibraries.ShowUserErrorText
+import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
 
 @Composable
 fun SignUp (onNavigate: (AppScreen) -> Unit){
@@ -41,7 +41,7 @@ fun SignUp (onNavigate: (AppScreen) -> Unit){
         onResult = {selectedUri -> profilePictureUri = selectedUri}
     )
 
-    var form by remember { mutableStateOf(SignUpFormState()) }
+    var form by remember { mutableStateOf(SignUpForm()) }
     var errorPresent by remember { mutableStateOf(false) }
 
 
@@ -114,8 +114,8 @@ private fun ProfileImage(
 
 @Composable
 fun CreateSignUpForm(
-    form: SignUpFormState,
-    onFormChange: (SignUpFormState) -> Unit
+    form: SignUpForm,
+    onFormChange: (SignUpForm) -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(1.dp),

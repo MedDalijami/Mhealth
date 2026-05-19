@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import com.example.mhealthcat.functionsAndLibraries.LogInFormState
+import com.example.mhealthcat.forms.LogInForm
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,18 +23,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mhealthcat.R
-import com.example.mhealthcat.functionsAndLibraries.AppScreen
-import com.example.mhealthcat.functionsAndLibraries.CreateOutlineButton
-import com.example.mhealthcat.functionsAndLibraries.CreateProfileImage
-import com.example.mhealthcat.functionsAndLibraries.CreateTextField
-import com.example.mhealthcat.functionsAndLibraries.ShowUserErrorText
+import com.example.mhealthcat.ElementsAndClasses.AppScreen
+import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
+import com.example.mhealthcat.ElementsAndClasses.CreateTextField
+import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 
 
 
 @Composable
 fun LogIn (onNavigate: (AppScreen) -> Unit) {
-    var form by remember { mutableStateOf(LogInFormState()) }
+    var form by remember { mutableStateOf(LogInForm()) }
     var errorPresent by remember {mutableStateOf(false)}
 
     Column(
@@ -100,8 +100,8 @@ fun LogIn (onNavigate: (AppScreen) -> Unit) {
 
 @Composable
 private fun CreateLoginForm(
-    form: LogInFormState,
-    onFormChange: (LogInFormState) -> Unit
+    form: LogInForm,
+    onFormChange: (LogInForm) -> Unit
 ) {
     CreateTextField(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),

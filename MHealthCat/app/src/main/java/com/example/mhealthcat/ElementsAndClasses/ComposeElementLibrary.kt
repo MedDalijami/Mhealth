@@ -1,4 +1,4 @@
-package com.example.mhealthcat.functionsAndLibraries
+package com.example.mhealthcat.ElementsAndClasses
 
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
@@ -55,7 +55,6 @@ import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.RetroYellow
 import com.example.mhealthcat.ui.theme.roboto
-import okhttp3.internal.http.StatusLine
 
 
 // COMPOSABLES
@@ -333,7 +332,6 @@ fun CreateCommentBox(
     label: String = "",
     minLines: Int = 2,
     maxLines: Int = 8,
-    placeholder: String = "Vpišite komentar...",
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -472,75 +470,3 @@ fun CreateStarRating(
 
 
 
-
-// FUNCTIONS
-
-
-// CLASSES
-data class WellbeingForm(
-    val rating: Int = 1,
-    val generalFeelings: String = " ",
-    val generalFears: String = " ",
-    val somethingGoodThatHappened: String = " "
-)
-
-data class SportForm(
-    val rating: Int = 1,
-    val hours: Int = 0,
-    val minutes: Int = 0,
-    val activity: String = " ",
-    val comment: String = " "
-)
-
-
-data class SleepForm(
-    val rating: Int = 1,
-    val hours: Int = 0,
-    val minutes: Int = 0,
-    val comment: String = " "
-)
-
-data class SocialFormState(
-    val socialInteraction: String = "Osebno",
-    val socialInteractionOther: String = "",
-    val people: String = "Prijatelji",
-    val numberOfPeople: Int = 1,
-    val comment: String = " ",
-    val rating: Int = 1,
-    val hours: Int = 0,
-    val minutes: Int = 0
-
-) {
-    val isOther get() = socialInteraction == "Drugo"
-
-    fun increaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople + 1)
-    fun decreaseNumberOfPeople() = copy(numberOfPeople = numberOfPeople - 1)
-
-
-}
-data class SignUpFormState(
-    val name: String = "",
-    val lastName: String = "",
-    val email: String = "",
-    val password: String = "",
-    val passwordRepeat: String = ""
-) {
-    val isValidEmail get() = email.contains("@") && email.contains(".")
-    val isValidPassword get() = password.length >= 8 && password.any { it.isDigit() }
-    val isValidPasswordRepeat get() = passwordRepeat == password && isValidPassword
-    val isValid get() = name.isNotEmpty() && lastName.isNotEmpty()
-            && isValidEmail && isValidPassword && isValidPasswordRepeat
-}
-
-data class LogInFormState(
-    val email:  String = "",
-    val password: String = ""
-) {
-    val isValidEmail get() = email.contains("@") && email.contains(".")
-    val isValidPassword get() = password.length >= 8 && password.any { it.isDigit() }
-    val isValid get() = isValidEmail && isValidPassword
-}
-
-enum class AppScreen {
-    Home, LogIn, SignUp, Sleep, Social, Sport, Wellbeing, Settings, User
-}
