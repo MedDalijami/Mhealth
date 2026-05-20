@@ -101,12 +101,14 @@ fun CreateOutlineButton(
     border: BorderStroke = BorderStroke(width = 3.dp, color = RetroPixelBorder),
     buttonText: String,
     fontFamily: FontFamily = roboto,
-    fontSize: TextUnit = 20.sp
+    fontSize: TextUnit = 20.sp,
+    enabled: Boolean = true
 ){
     OutlinedButton(
         modifier = modifier,
         onClick = onClick,
-        border = border
+        border = if (enabled) border else BorderStroke(width = 3.dp, color = Color.Gray),
+        enabled = enabled
     ) {
         Text(
             text = buttonText,

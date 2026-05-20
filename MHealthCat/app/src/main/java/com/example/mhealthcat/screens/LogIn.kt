@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.example.mhealthcat.forms.LogInForm
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,14 +31,18 @@ import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
 import com.example.mhealthcat.ElementsAndClasses.CreateTextField
 import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
+import com.example.mhealthcat.viewModels.LogInViewModel
 import com.example.mhealthcat.viewModels.NavigationViewModel
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
 fun LogIn () {
     val navigationViewModel: NavigationViewModel = viewModel()
-    var form by remember { mutableStateOf(LogInForm()) }
-    var errorPresent by remember {mutableStateOf(false)}
+    val logInViewModel: LogInViewModel = viewModel()
+
+    val showError by logInViewModel.showError.collectAsState()
+    val allowSubmit by logInViewModel.allowSubmit.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -55,9 +60,7 @@ fun LogIn () {
 
         Column {
 
-            CreateLoginForm(
-                form = form,
-                onFormChange = {form = it})
+            CreateLoginForm(logInViewModel)
         }
 
         Column(
@@ -71,15 +74,12 @@ fun LogIn () {
                 CreateOutlineButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (form.isValid) {
+                        if (logInViewModel.logIn()){
                             navigationViewModel.changeToScreen(AppScreen.Home)
-                            errorPresent = false
-                        }
-                        else {
-                            errorPresent = true
                         }
                     },
-                    buttonText = "Vpiši se"
+                    buttonText = "Vpiši se",
+                    enabled = allowSubmit
                 )
                 Card(
                     modifier = Modifier
@@ -89,11 +89,12 @@ fun LogIn () {
                 CreateOutlineButton(
                     modifier = Modifier.weight(1f),
                     onClick = { navigationViewModel.changeToScreen(AppScreen.SignUp) },
-                    buttonText = "Registriraj se"
+                    buttonText = "Registriraj se",
+
                 )
             }
 
-            ShowUserErrorText(errorPresent)
+            ShowUserErrorText(showError)
         }
     }
 
@@ -102,25 +103,27 @@ fun LogIn () {
 
 @Composable
 private fun CreateLoginForm(
-    form: LogInForm,
-    onFormChange: (LogInForm) -> Unit
+    logInViewModel: LogInViewModel
 ) {
+    val logInForm by logInViewModel.logInForm.collectAsState()
+
     CreateTextField(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        textFieldValue = form.email,
-        onValueChange = { onFormChange(form.copy(email = it)) },
-        isValid = form.isValidEmail,
+        textFieldValue = logInForm.email,
+        onValueChange = { logInViewModel.updateEmail(it) },
+        isValid = logInViewModel.isValidEmail(),
         placeholder = "e-mail naslov",
         errorMsg = "Vnesen e-mail naslov ni veljaven"
     )
     CreateTextField(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-        textFieldValue = form.password,
-        onValueChange = { onFormChange(form.copy(password = it)) },
-        isValid = form.isValidPassword,
+        textFieldValue = logInForm.password,
+        onValueChange = { logInViewModel.updatePassword(it) },
+        isValid = logInViewModel.isValidPassword(),
         placeholder = "geslo",
         errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro"
     )
+
 }
 @Preview(showBackground = true)
 @Composable
