@@ -49,12 +49,10 @@ class SportViewModel: ViewModel() {
 
     fun submitForm() {
         if (validateForm()) {
-            println("Podatki o druženju so shranjeni.")
+            println("Podatki o športanju so shranjeni.")
             toggleShowFormOff()
             clearForm()
-        } else {
-            println("Narobe izpolnjeni podatki o druženju.")
-        }
+        } else println("Narobe izpolnjeni podatki o športanju.")
 
     }
 

@@ -76,9 +76,7 @@ class SocialViewModel: ViewModel() {
             println("Podatki o druženju so shranjeni.")
             toggleShowFormOff()
             clearForm()
-        } else {
-            println("Narobe izpolnjeni podatki o druženju.")
-        }
+        } else println("Narobe izpolnjeni podatki o druženju.")
 
     }
 

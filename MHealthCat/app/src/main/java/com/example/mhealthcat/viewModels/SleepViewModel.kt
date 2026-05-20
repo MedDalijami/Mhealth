@@ -41,9 +41,7 @@ class SleepViewModel : ViewModel() {
             println("Podatki o spancu so shranjeni.")
             toggleShowFormOff()
             clearForm()
-        } else {
-            println("Narobe izpolnjeni podatki o spancu.")
-        }
+        } else println("Narobe izpolnjeni podatki o spancu.")
 
     }
 
