@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,12 +25,15 @@ import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
 import com.example.mhealthcat.ElementsAndClasses.CreateTimeDial
-import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
+import com.example.mhealthcat.viewModels.SportViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun Sports() {
-    var showForm by remember { mutableStateOf(false) }
+
+    val sportViewModel: SportViewModel = viewModel()
+    val showForm by sportViewModel.showForm.collectAsState()
 
     Column(
         modifier = Modifier
@@ -42,20 +46,23 @@ fun Sports() {
         if (!showForm) {
             // Basic screen
             CreateOutlineButton(
-                onClick = { showForm = true },
+                onClick = { sportViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo športno aktivnost"
             )
         } else {
             // form
-            CreateSportForm(onConfirm = {showForm = false})
+            CreateSportForm( sportViewModel)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateSportForm(onConfirm: () -> Unit) {
-    var sportForm by remember { mutableStateOf(SportForm()) }
+fun CreateSportForm(
+    sportViewModel: SportViewModel
+) {
+
+    val sportForm by sportViewModel.sportForm.collectAsState()
     var showAlert by remember { mutableStateOf(false) }
 
 
@@ -81,7 +88,7 @@ fun CreateSportForm(onConfirm: () -> Unit) {
             minLines = 1,
             maxLines = 2,
             onValueChange = {
-                sportForm = sportForm.copy(activity = it)
+               sportViewModel.updateActivity(it)
             }
         )
 
@@ -90,7 +97,7 @@ fun CreateSportForm(onConfirm: () -> Unit) {
             value = sportForm.comment,
             label = "Komentar",
             onValueChange = {
-                sportForm = sportForm.copy(comment = it)
+                sportViewModel.updateComment(it)
             }
         )
 
@@ -99,17 +106,16 @@ fun CreateSportForm(onConfirm: () -> Unit) {
                 .fillMaxWidth()
                 .padding(bottom = 15.dp),
             rating = sportForm.rating,
-            onRatingChange = {sportForm = sportForm.copy(rating = it)},
+            onRatingChange = {
+                sportViewModel.updateRating(it)
+            },
             starIconModifier = Modifier.size(40.dp)
         )
 
 
         CreateTimeDial(
             onConfirmButtonClicked = {
-                sportForm = sportForm.copy(
-                    hours = timePickerState.hour,
-                    minutes = timePickerState.minute
-                )
+                sportViewModel.updateTime(hours = timePickerState.hour, minutes = timePickerState.minute)
                 showAlert = true
             },
             setButtonText = "Zabeleži športanje",
@@ -120,13 +126,13 @@ fun CreateSportForm(onConfirm: () -> Unit) {
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                sportForm = SportForm()
+                sportViewModel.clearForm()
                 timePickerState.hour = 0
                 timePickerState.minute = 0
                 showAlert = false
             },
             onConfirm = {
-                onConfirm()
+                sportViewModel.submitForm()
                 showAlert = false
             },
             alertTitle = "Ali želite zabeležiti športno aktivnost?",

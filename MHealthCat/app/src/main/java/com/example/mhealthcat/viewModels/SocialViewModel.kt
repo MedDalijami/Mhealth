@@ -68,13 +68,13 @@ class SocialViewModel: ViewModel() {
 
     fun validateForm(): Boolean {
         val form = _socialForm.value
-        return form.people.isNotEmpty() && form.comment.isNotEmpty() && form.hours >= 0 && form.minutes >= 0
+        return form.people.isNotEmpty() && form.comment.isNotEmpty() && (form.hours > 0 || form.minutes > 0)
     }
 
     fun submitForm() {
         if (validateForm()) {
             println("Podatki o druženju so shranjeni.")
-            _showForm.value = false
+            toggleShowFormOff()
             clearForm()
         } else {
             println("Narobe izpolnjeni podatki o druženju.")

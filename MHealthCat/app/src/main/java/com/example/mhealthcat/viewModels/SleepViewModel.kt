@@ -33,13 +33,13 @@ class SleepViewModel : ViewModel() {
 
     fun validateForm(): Boolean {
         val form = _sleepForm.value
-        return form.hours >= 0 && form.minutes >= 0 && form.comment.isNotEmpty()
+        return (form.hours > 0 || form.minutes > 0) && form.comment.isNotEmpty()
     }
 
     fun submitForm() {
         if (validateForm()) {
             println("Podatki o spancu so shranjeni.")
-            _showForm.value = false
+            toggleShowFormOff()
             clearForm()
         } else {
             println("Narobe izpolnjeni podatki o spancu.")
