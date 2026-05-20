@@ -54,7 +54,7 @@ class LogInViewModel : ViewModel(){
         return form.password.length >= 8 && form.password.any { it.isDigit() }
     }
 
-    fun isValidForSubmit() {
+    private fun isValidForSubmit() {
         if (isValidEmail() && isValidPassword()) {
             toggleAllowSubmitOn()
         } else {
@@ -62,13 +62,13 @@ class LogInViewModel : ViewModel(){
         }
     }
 
-    fun validateForm(): Boolean {
+    private fun validateForm(): Boolean {
         val form = _logInForm.value
         return form.email == "testni@uporabnik.si" && form.password == "testni123"
 
     }
 
-    fun clearForm() {
+    private fun clearForm() {
         _logInForm.value = LogInForm()
     }
 
@@ -83,7 +83,6 @@ class LogInViewModel : ViewModel(){
         } else {
             println("Neuspešna prijava.")
             toggleShowErrorOn()
-            clearForm()
             false
         }
     }
