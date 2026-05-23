@@ -57,7 +57,7 @@ class SignUpViewModel: ViewModel() {
     }
 
     fun isValidEmail(): Boolean {
-        val form = signUpForm.value
+        val form = _signUpForm.value
         return form.email.contains("@") && form.email.contains(".")
     }
 

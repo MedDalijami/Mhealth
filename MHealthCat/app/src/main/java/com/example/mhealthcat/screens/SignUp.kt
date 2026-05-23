@@ -1,34 +1,29 @@
 package com.example.mhealthcat.screens
 
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
+
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import android.net.Uri
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mhealthcat.R
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
-import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
+import com.example.mhealthcat.ElementsAndClasses.ProfileImage
 import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.ElementsAndClasses.CreateTextField
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
@@ -68,73 +63,38 @@ fun SignUp (){
             signUpViewModel
         )
 
-        Column(
-            modifier = Modifier.fillMaxWidth()
+
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    if (signUpViewModel.signUp()) {
+                        navigationViewModel.changeToScreen(AppScreen.LogIn)
+                    }
+                },
+                buttonText = "Registriraj se",
+                enabled = allowSubmit
+            )
 
-            Row(
-                modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                CreateOutlineButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (signUpViewModel.signUp()) {
-                            navigationViewModel.changeToScreen(AppScreen.LogIn)
-                        }
-                    },
-                    buttonText = "Registriraj se",
-                    enabled = allowSubmit
-                )
+            Spacer(modifier = Modifier.width(10.dp))
 
-                Spacer(modifier = Modifier.width(10.dp))
-
-                CreateOutlineButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = { navigationViewModel.changeToScreen(AppScreen.LogIn) },
-                    buttonText = "Nazaj na vpis"
-                )
-            }
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = { navigationViewModel.changeToScreen(AppScreen.LogIn) },
+                buttonText = "Nazaj na vpis"
+            )
         }
 
-        ShowUserErrorText(
-            errorPresent = showError,
-            errorText = "Vnesen e-mail naslov že obstaja. Prosimo uporabite drug e-mail naslov.")
+
+    ShowUserErrorText(
+        errorPresent = showError,
+        errorText = "Vnesen e-mail naslov že obstaja. Prosimo uporabite drug e-mail naslov.")
     }
 
 
-}
-
-@Composable
-private fun ProfileImage(
-    profilePictureUri: Uri?,
-    photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>
-) {
-    Column(
-        modifier = Modifier
-            .padding(bottom = 25.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(15.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CreateProfileImage(
-            modifier = Modifier
-                .size(160.dp)
-                .aspectRatio(1f),
-            color = Color.White,
-            imgRes = if (profilePictureUri == null) R.drawable.user_menu else null,
-            imgUri = profilePictureUri,
-            description = "Profile picture"
-        )
-        CreateOutlineButton(
-            onClick = {
-                photoPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
-            },
-            buttonText = "Izberi profilno sliko"
-        )
-    }
 }
 
 

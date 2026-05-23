@@ -20,3 +20,5 @@ val RetroDark = Color(0xFF1A0A2E)
 
 val RetroDark2 = Color(0xFF2A0A4E)
 val RetroPixelBorder = Color(0xFFFF00A0)
+
+val RetroRed = Color(0xFFD50000)

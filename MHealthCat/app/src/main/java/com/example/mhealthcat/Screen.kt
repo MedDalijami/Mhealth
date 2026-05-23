@@ -21,6 +21,7 @@ import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep
 import com.example.mhealthcat.screens.Social
 import com.example.mhealthcat.screens.Sports
+import com.example.mhealthcat.screens.User
 import com.example.mhealthcat.screens.Wellbeing
 import com.example.mhealthcat.viewModels.NavigationViewModel
 
@@ -61,7 +62,7 @@ fun Screen(modifier: Modifier = Modifier) {
                 AppScreen.Wellbeing -> Wellbeing()
 
                 AppScreen.Settings -> Text("Settings")
-                AppScreen.User -> Text("User")
+                AppScreen.User -> User()
 
             }
         }

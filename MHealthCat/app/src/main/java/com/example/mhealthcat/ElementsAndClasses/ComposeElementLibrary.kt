@@ -1,12 +1,16 @@
 package com.example.mhealthcat.ElementsAndClasses
 
 import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -74,14 +78,6 @@ fun CreateProfileImage (
         border = BorderStroke(3.dp, color)
 
     ) {
-        if (imgRes != null) {
-            Image(
-                modifier = Modifier.padding(5.dp),
-                painter = painterResource(id = imgRes),
-                contentDescription = description,
-                colorFilter = ColorFilter.tint(color)
-            )
-        }
         if(imgUri != null){
             AsyncImage(
                 modifier = Modifier
@@ -89,6 +85,13 @@ fun CreateProfileImage (
                 model = imgUri,
                 contentScale = ContentScale.Crop,
                 contentDescription = description
+            )
+        } else if (imgRes != null) {
+            Image(
+                modifier = Modifier.padding(5.dp),
+                painter = painterResource(id = imgRes),
+                contentDescription = description,
+                colorFilter = ColorFilter.tint(color)
             )
         }
     }
@@ -124,12 +127,14 @@ fun CreateTextField (
     textFieldValue: String,
     onValueChange: (String) -> Unit,
     isValid: Boolean = true,
+    enabled: Boolean = true,
     placeholder: String = textFieldValue,
     errorMsg: String = "Prišlo je do napake"
 ) {
     OutlinedTextField(
         value = textFieldValue,
         modifier = modifier,
+        enabled = enabled,
         onValueChange = { onValueChange(it) },
         placeholder = {
             Text(
@@ -470,5 +475,48 @@ fun CreateStarRating(
 
 
 
+
+@Composable
+fun ProfileImage(
+    profilePictureUri: Uri?,
+    photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    buttonVisible: Boolean = true,
+    border: BorderStroke = BorderStroke(width = 3.dp, color = RetroPixelBorder),
+    fontFamily: FontFamily = roboto,
+    fontSize: TextUnit = 20.sp,
+    buttonText: String = "Izberi profilno sliko"
+) {
+    Column(
+        modifier = Modifier
+            .padding(bottom = 25.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CreateProfileImage(
+            modifier = Modifier
+                .size(160.dp)
+                .aspectRatio(1f),
+            color = Color.White,
+            imgRes = if (profilePictureUri == null) R.drawable.user_menu else null,
+            imgUri = profilePictureUri,
+            description = "Profile picture"
+        )
+        if (buttonVisible) {
+            CreateOutlineButton(
+                onClick = {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                },
+                buttonText = buttonText,
+                border = border,
+                fontSize = fontSize,
+                fontFamily = fontFamily
+
+            )
+        }
+    }
+}
 
 
