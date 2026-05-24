@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
+import com.example.mhealthcat.screens.Data
 import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep
@@ -61,7 +62,10 @@ fun Screen(modifier: Modifier = Modifier) {
 
                 AppScreen.Wellbeing -> Wellbeing()
 
+                AppScreen.Data -> Data()
+
                 AppScreen.Settings -> Text("Settings")
+
                 AppScreen.User -> User()
 
             }

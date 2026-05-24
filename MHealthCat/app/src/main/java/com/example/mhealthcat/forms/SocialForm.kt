@@ -8,7 +8,8 @@ data class SocialForm(
     val comment: String = "",
     val rating: Int = 1,
     val hours: Int = 0,
-    val minutes: Int = 0
+    val minutes: Int = 0,
+    val createdAt: Long = System.currentTimeMillis()
 
 ) {
 }

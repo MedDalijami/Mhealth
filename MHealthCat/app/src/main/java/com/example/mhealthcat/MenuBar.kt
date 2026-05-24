@@ -105,6 +105,7 @@ fun MenuBar() {
 
             val userMenuList = listOf(
                 Triple("Uporabnik", "\uD83D\uDC64", AppScreen.User),
+                Triple("Pregled vnosov","\uD83D\uDCC8", AppScreen.Data),
                 Triple("Nastavitve", "⚙\uFE0F", AppScreen.Settings)
             )
 

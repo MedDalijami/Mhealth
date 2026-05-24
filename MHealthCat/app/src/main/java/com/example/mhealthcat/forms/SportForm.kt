@@ -5,5 +5,6 @@ data class SportForm(
     val hours: Int = 0,
     val minutes: Int = 0,
     val activity: String = "",
-    val comment: String = ""
+    val comment: String = "",
+    val createdAt: Long = System.currentTimeMillis()
 )

@@ -37,6 +37,7 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.ElementsAndClasses.CreateTextField
 import com.example.mhealthcat.ElementsAndClasses.ProfileImage
 import com.example.mhealthcat.R
+import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.RetroRed
 import com.example.mhealthcat.viewModels.NavigationViewModel
 import com.example.mhealthcat.viewModels.UserViewModel
@@ -358,7 +359,7 @@ fun CreateUserProfileButtonsPassword (
             },
             buttonText = "Prekliči",
             fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary)
+            border = BorderStroke(width = 3.dp, color = RetroPurple)
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -370,7 +371,7 @@ fun CreateUserProfileButtonsPassword (
             },
             buttonText = "Shrani",
             fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary),
+            border = BorderStroke(width = 3.dp, color = RetroPurple),
             enabled = allowPasswordSubmit
         )
     }

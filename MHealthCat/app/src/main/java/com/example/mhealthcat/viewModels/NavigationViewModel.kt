@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.ElementsAndClasses.AppScreen
 
 class NavigationViewModel : ViewModel() {
-    private val _currentScreen = mutableStateOf(AppScreen.LogIn)
+    private val _currentScreen = mutableStateOf(AppScreen.Home)
     val currentScreen: State<AppScreen> = _currentScreen
 
     fun changeToScreen(screen: AppScreen) {
