@@ -56,6 +56,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    //YChart
+    implementation(libs.ycharts)
+
     //view model
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 

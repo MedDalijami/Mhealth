@@ -1,12 +1,19 @@
 package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
+import co.yml.charts.common.model.PlotType
+import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.mhealthcat.ElementsAndClasses.DataType
 import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.forms.WellbeingForm
 import com.example.mhealthcat.testData.TestData
+import com.example.mhealthcat.ui.theme.RetroPixelBorder
+import com.example.mhealthcat.ui.theme.RetroPurple
+import com.example.mhealthcat.ui.theme.RetroRed
+import com.example.mhealthcat.ui.theme.RetroTeal
+import com.example.mhealthcat.ui.theme.RetroYellow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -14,56 +21,41 @@ import java.util.Locale
 
 
 class DataDisplayViewModel : ViewModel() {
-    private val _listOfSleepData = MutableStateFlow<List<SleepForm>>(emptyList())
-
-    private val _listOfSocialData = MutableStateFlow<List<SocialForm>>(emptyList())
-
-    private val _listOfSportData = MutableStateFlow<List<SportForm>>(emptyList())
-
-    private val _listOfWellbeingData = MutableStateFlow<List<WellbeingForm>>(emptyList())
-
+    private val _listOfSleepData: List<SleepForm> = TestData.sleepData
+    private val _listOfSocialData: List<SocialForm> = TestData.socialData
+    private val _listOfSportData: List<SportForm> = TestData.sportData
+    private val _listOfWellbeingData: List<WellbeingForm> = TestData.wellbeingData
     private val _selectedDataType = MutableStateFlow(DataType.SLEEP)
 
+    private val _sliceColors = listOf(RetroRed, RetroYellow, RetroTeal, RetroPixelBorder, RetroPurple)
     private val _graphView = MutableStateFlow(true)
 
-    val listOfSleepData: MutableStateFlow<List<SleepForm>> = _listOfSleepData
-
-    val listOfSocialData: MutableStateFlow<List<SocialForm>> = _listOfSocialData
-
-    val listOfSportData: MutableStateFlow<List<SportForm>> = _listOfSportData
-
-    val listOfWellbeingData: MutableStateFlow<List<WellbeingForm>> = _listOfWellbeingData
 
     val graphView: MutableStateFlow<Boolean> = _graphView
 
     val selectedDataType: MutableStateFlow<DataType> = _selectedDataType
 
-    init {
-        _listOfSleepData.value = TestData.sleepData
-        _listOfSocialData.value = TestData.socialData
-        _listOfSportData.value = TestData.sportData
-        _listOfWellbeingData.value = TestData.wellbeingData
-    }
 
     fun formatTimestamp(createdAt: Long): String {
         val now = System.currentTimeMillis()
         val diff = now - createdAt
 
         val minutes = diff / (1000 * 60)
-        val hours   = diff / (1000 * 60 * 60)
-        val days    = diff / (1000 * 60 * 60 * 24)
+        val hours = diff / (1000 * 60 * 60)
+        val days = diff / (1000 * 60 * 60 * 24)
 
         return when {
-            minutes < 60   -> "$minutes min nazaj"
-            hours   < 24   -> "$hours h nazaj"
-            days    <= 31  -> "$days dni nazaj"
-            else           ->
-                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date(createdAt)
-            )
+            minutes < 60 -> "$minutes min nazaj"
+            hours < 24 -> "$hours h nazaj"
+            days <= 31 -> "$days dni nazaj"
+            else ->
+                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(
+                    Date(createdAt)
+                )
         }
     }
 
-    fun toggleGraphView(index: Int)  {
+    fun toggleGraphView(index: Int) {
         _graphView.value = index == 0
     }
 
@@ -71,11 +63,36 @@ class DataDisplayViewModel : ViewModel() {
         _selectedDataType.value = DataType.entries.first() { it.displayName == displayName }
     }
 
-    fun dataTypesAsStringList () : List<String> {
+    fun dataTypesAsStringList(): List<String> {
         return DataType.entries.map { it.displayName }
     }
 
+    fun returnSleepRatings(): Map<Int, Int> =
+        _listOfSleepData.groupingBy { it.rating }.eachCount()
 
+    fun returnSocialRatings(): Map<Int, Int> =
+        _listOfSocialData.groupingBy { it.rating }.eachCount()
 
+    fun returnSportRatings(): Map<Int, Int> =
+        _listOfSportData.groupingBy { it.rating }.eachCount()
+
+    fun returnWellbeingRatings(): Map<Int, Int> =
+        _listOfWellbeingData.groupingBy { it.rating }.eachCount()
+
+    private fun buildChartData(data: Map<Int, Int>): PieChartData = PieChartData(
+        slices = (1..5).map { rating ->
+            PieChartData.Slice(
+                label = "$rating ⭐",
+                value = data[rating]?.toFloat() ?: 0f,
+                color = _sliceColors[rating - 1]
+            )
+        },
+        plotType = PlotType.Donut
+    )
+
+    fun returnSleepChartData()     = buildChartData(returnSleepRatings())
+    fun returnSocialChartData()    = buildChartData(returnSocialRatings())
+    fun returnSportChartData()     = buildChartData(returnSportRatings())
+    fun returnWellbeingChartData() = buildChartData(returnWellbeingRatings())
 
 }
