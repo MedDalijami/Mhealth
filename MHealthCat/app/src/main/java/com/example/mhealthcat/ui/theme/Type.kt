@@ -10,7 +10,6 @@ import com.example.mhealthcat.R
 
 // Set of Material typography styles to start with
 
-// Used pixelFont
 val roboto = FontFamily(Font(R.font.roboto_regular))
 val Typography = Typography(
 

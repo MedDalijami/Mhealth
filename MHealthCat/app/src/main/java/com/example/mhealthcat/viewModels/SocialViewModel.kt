@@ -14,8 +14,7 @@ class SocialViewModel: ViewModel() {
     val socialForm: StateFlow<SocialForm> = _socialForm.asStateFlow()
     val showForm: StateFlow<Boolean> = _showForm.asStateFlow()
 
-    val socialInteractionTypeList = listOf("Osebno", "Klic", "Skupinsko", "Drugo")
-    val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci")
+    val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci, Sodelavci", "Drugo")
 
 
     fun toggleShowFormOn() {
@@ -32,10 +31,6 @@ class SocialViewModel: ViewModel() {
 
     fun isOther(): Boolean {
         return _socialForm.value.socialInteraction == "Drugo"
-    }
-
-    fun updateSocialInteractionOther(socialInteractionOther: String) {
-        _socialForm.value = _socialForm.value.copy(socialInteractionOther = socialInteractionOther)
     }
 
     fun updatePeople(people: String) {

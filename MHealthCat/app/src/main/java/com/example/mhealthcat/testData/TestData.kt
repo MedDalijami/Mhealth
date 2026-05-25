@@ -63,52 +63,7 @@ object TestData {
 
     val socialData = listOf(
         SocialForm(
-            socialInteraction = "Osebno",
-            socialInteractionOther = "",
-            people = "Prijatelji",
-            numberOfPeople = 4,
-            comment = "Večerja s prijatelji, zelo prijetno vzdušje.",
-            rating = 5,
-            hours = 3,
-            minutes = 0,
-            createdAt = daysAgo(6)
-        ),
-        SocialForm(
-            socialInteraction = "Spletno",
-            socialInteractionOther = "",
-            people = "Družina",
-            numberOfPeople = 2,
-            comment = "Videoklic s starši, veseli smo se videli.",
-            rating = 4,
-            hours = 1,
-            minutes = 30,
-            createdAt = daysAgo(5)
-        ),
-        SocialForm(
-            socialInteraction = "Drugo",
-            socialInteractionOther = "Telefonski klic",
-            people = "Sodelavci",
-            numberOfPeople = 1,
-            comment = "Kratek klic s sodelavcem glede projekta.",
-            rating = 3,
-            hours = 0,
-            minutes = 45,
-            createdAt = daysAgo(4)
-        ),
-        SocialForm(
-            socialInteraction = "Osebno",
-            socialInteractionOther = "",
-            people = "Prijatelji",
-            numberOfPeople = 10,
-            comment = "Rojstnodnevna zabava, veliko ljudi, a malo utrudljivo.",
-            rating = 3,
-            hours = 4,
-            minutes = 0,
-            createdAt = daysAgo(2)
-        ),
-        SocialForm(
-            socialInteraction = "Osebno",
-            socialInteractionOther = "",
+            socialInteraction = "Nedeljsko kosilo doma",
             people = "Družina",
             numberOfPeople = 5,
             comment = "Nedeljsko kosilo pri starših, toplo in domače.",
@@ -116,6 +71,46 @@ object TestData {
             hours = 2,
             minutes = 30,
             createdAt = daysAgo(0)
+        ),
+        SocialForm(
+            socialInteraction = "Rojstnodnevna zabava",
+            people = "Prijatelji",
+            numberOfPeople = 10,
+            comment = "Veliko ljudi, a malo utrudljivo.",
+            rating = 3,
+            hours = 4,
+            minutes = 0,
+            createdAt = daysAgo(2)
+        ),
+        SocialForm(
+            socialInteraction = "Telefonski klic",
+            people = "Sodelavci",
+            numberOfPeople = 1,
+            comment = "Kratek klic glede projekta.",
+            rating = 3,
+            hours = 0,
+            minutes = 45,
+            createdAt = daysAgo(4)
+        ),
+        SocialForm(
+            socialInteraction = "Videoklic z družino",
+            people = "Družina",
+            numberOfPeople = 2,
+            comment = "Veseli smo se videli.",
+            rating = 4,
+            hours = 1,
+            minutes = 30,
+            createdAt = daysAgo(5)
+        ),
+        SocialForm(
+            socialInteraction = "Večerja v restavraciji",
+            people = "Prijatelji",
+            numberOfPeople = 4,
+            comment = "Zelo prijetno vzdušje.",
+            rating = 5,
+            hours = 3,
+            minutes = 0,
+            createdAt = daysAgo(6)
         ),
     )
 

@@ -1,8 +1,7 @@
 package com.example.mhealthcat.forms
 
 data class SocialForm(
-    val socialInteraction: String = "Osebno",
-    val socialInteractionOther: String = "",
+    val socialInteraction: String = "",
     val people: String = "Prijatelji",
     val numberOfPeople: Int = 1,
     val comment: String = "",

@@ -50,16 +50,16 @@ fun Social() {
     ) {
 
 
-        if (!showForm) {
-            // Basic screen
+        if (showForm) {
+            CreateSocialForm(
+                socialViewModel = socialViewModel
+            )
+        } else {
             CreateOutlineButton(
                 onClick = { socialViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo druženje"
             )
-        } else {
-            CreateSocialForm(
-                socialViewModel = socialViewModel
-            )
+
         }
     }
 
@@ -76,7 +76,6 @@ fun CreateSocialForm(
     var showAlert by remember { mutableStateOf(false) }
     val socialForm by socialViewModel.socialForm.collectAsState()
 
-    val socialInteractionTypeList = socialViewModel.socialInteractionTypeList
     val peopleList = socialViewModel.peopleList
 
     val timePickerState = rememberTimePickerState(
@@ -92,37 +91,30 @@ fun CreateSocialForm(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        CreateSelectMenu(
-            modifier = Modifier.fillMaxWidth(),
-            selectedItem = socialForm.socialInteraction,
-            selectItemsList = socialInteractionTypeList,
-            onSelect = { socialViewModel.updateSocialInteraction(it) },
-            label = "Tip druženja"
+
+        CreateTextBoxNonError(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+            value = socialForm.socialInteraction,
+            placeholder = "Vpišite tip druženja",
+            label = "Kako ste se družili?",
+            onValueChange = { socialViewModel.updateSocialInteraction(it) },
         )
 
-        if (socialViewModel.isOther()) {
-            CreateTextBoxNonError(
+
+            CreateSelectMenu(
                 modifier = Modifier.fillMaxWidth(),
-                value = socialForm.socialInteractionOther,
-                placeholder = "Vpišite tip druženja",
-                onValueChange = { socialViewModel.updateSocialInteractionOther(it) },
+                selectedItem = socialForm.people,
+                selectItemsList = peopleList,
+                onSelect = { socialViewModel.updatePeople(it) },
+                label = "S kom ste se družili?"
             )
-        }
 
-        CreateSelectMenu(
-            modifier = Modifier.fillMaxWidth(),
-            selectedItem = socialForm.people,
-            selectItemsList = peopleList,
-            onSelect = { socialViewModel.updatePeople(it) },
-            label = "S kom ste se družili?"
-        )
-
-        CreateCommentBox(
-            value = socialForm.comment,
-            label = "Komentar in občutki ob druženju",
-            onValueChange = { socialViewModel.updateComment(it) },
-            modifier = Modifier.padding(vertical = 15.dp)
-        )
+            CreateCommentBox (
+                value = socialForm.comment,
+                label = "Komentar in občutki ob druženju",
+                onValueChange = { socialViewModel.updateComment(it) },
+                modifier = Modifier.padding(vertical = 15.dp)
+            )
 
         CreateStepper(
             modifier = Modifier
@@ -139,7 +131,7 @@ fun CreateSocialForm(
             modifier = Modifier
                 .fillMaxWidth(),
             rating = socialForm.rating,
-            onRatingChange = {socialViewModel.updateRating(it)},
+            onRatingChange = { socialViewModel.updateRating(it) },
             starIconModifier = Modifier.size(40.dp)
         )
 
@@ -163,7 +155,8 @@ fun CreateSocialForm(
             CreateTimeDial(
                 onConfirmButtonClicked = {
                     socialViewModel.updateTime(timePickerState.hour, timePickerState.minute)
-                    showAlert = true },
+                    showAlert = true
+                },
                 setButtonText = "Zabeleži druženje",
                 timePickerState = timePickerState
             )
