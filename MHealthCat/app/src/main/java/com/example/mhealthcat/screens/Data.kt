@@ -29,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mhealthcat.ElementsAndClasses.CreateSelectMenu
+import com.example.mhealthcat.elementsAndClasses.CreateSelectMenu
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.viewModels.DataDisplayViewModel
 import androidx.compose.runtime.collectAsState
@@ -45,7 +45,7 @@ import androidx.compose.ui.res.painterResource
 import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
-import com.example.mhealthcat.ElementsAndClasses.DataType
+import com.example.mhealthcat.elementsAndClasses.DataType
 import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm

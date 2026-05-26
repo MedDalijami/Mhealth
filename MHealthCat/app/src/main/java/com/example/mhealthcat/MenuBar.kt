@@ -29,8 +29,8 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mhealthcat.ElementsAndClasses.AppScreen
-import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
+import com.example.mhealthcat.elementsAndClasses.AppScreen
+import com.example.mhealthcat.elementsAndClasses.CreateProfileImage
 import com.example.mhealthcat.ui.theme.RetroDark
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPixelBorder

@@ -3,7 +3,7 @@ package com.example.mhealthcat.viewModels
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
-import com.example.mhealthcat.ElementsAndClasses.AppScreen
+import com.example.mhealthcat.elementsAndClasses.AppScreen
 
 class NavigationViewModel : ViewModel() {
     private val _currentScreen = mutableStateOf(AppScreen.Home)

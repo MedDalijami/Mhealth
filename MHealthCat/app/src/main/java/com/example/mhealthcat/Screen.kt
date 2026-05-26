@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mhealthcat.ElementsAndClasses.AppScreen
+import com.example.mhealthcat.elementsAndClasses.AppScreen
 import com.example.mhealthcat.screens.Data
 import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp

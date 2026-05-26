@@ -1,4 +1,4 @@
-package com.example.mhealthcat.ElementsAndClasses
+package com.example.mhealthcat.elementsAndClasses
 
 enum class DataType (val displayName: String) {
     SLEEP("Spanje"),

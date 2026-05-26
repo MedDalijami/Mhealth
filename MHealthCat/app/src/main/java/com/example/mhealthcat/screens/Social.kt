@@ -23,16 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mhealthcat.ElementsAndClasses.CreateAlert
-import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
-import com.example.mhealthcat.ElementsAndClasses.CreateSelectMenu
-import com.example.mhealthcat.ElementsAndClasses.CreateTextBoxNonError
-import com.example.mhealthcat.ElementsAndClasses.CreateTimeDial
-import com.example.mhealthcat.forms.SocialForm
+import com.example.mhealthcat.elementsAndClasses.CreateAlert
+import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.elementsAndClasses.CreateSelectMenu
+import com.example.mhealthcat.elementsAndClasses.CreateTextBoxNonError
+import com.example.mhealthcat.elementsAndClasses.CreateTimeDial
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
-import com.example.mhealthcat.ElementsAndClasses.CreateStepper
-import com.example.mhealthcat.ElementsAndClasses.CreateCommentBox
-import com.example.mhealthcat.ElementsAndClasses.CreateStarRating
+import com.example.mhealthcat.elementsAndClasses.CreateStepper
+import com.example.mhealthcat.elementsAndClasses.CreateCommentBox
+import com.example.mhealthcat.elementsAndClasses.CreateStarRating
 import com.example.mhealthcat.viewModels.SocialViewModel
 
 

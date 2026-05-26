@@ -3,7 +3,7 @@ package com.example.mhealthcat.viewModels
 import androidx.lifecycle.ViewModel
 import co.yml.charts.common.model.PlotType
 import co.yml.charts.ui.piechart.models.PieChartData
-import com.example.mhealthcat.ElementsAndClasses.DataType
+import com.example.mhealthcat.elementsAndClasses.DataType
 import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm

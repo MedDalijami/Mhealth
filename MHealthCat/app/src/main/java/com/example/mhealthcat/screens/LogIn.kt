@@ -22,11 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.R
-import com.example.mhealthcat.ElementsAndClasses.AppScreen
-import com.example.mhealthcat.ElementsAndClasses.CreateOutlineButton
-import com.example.mhealthcat.ElementsAndClasses.CreateProfileImage
-import com.example.mhealthcat.ElementsAndClasses.CreateTextField
-import com.example.mhealthcat.ElementsAndClasses.ShowUserErrorText
+import com.example.mhealthcat.elementsAndClasses.AppScreen
+import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
+import com.example.mhealthcat.elementsAndClasses.CreateProfileImage
+import com.example.mhealthcat.elementsAndClasses.CreateTextField
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.viewModels.LogInViewModel
 import com.example.mhealthcat.viewModels.NavigationViewModel
