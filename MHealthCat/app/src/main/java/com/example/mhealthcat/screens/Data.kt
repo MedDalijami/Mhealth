@@ -2,7 +2,6 @@ package com.example.mhealthcat.screens
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,16 +18,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxDefaults
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,13 +46,13 @@ import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.mhealthcat.ElementsAndClasses.DataType
-import com.example.mhealthcat.R
 import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.forms.WellbeingForm
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPurple
+import com.example.mhealthcat.R
 import com.example.mhealthcat.ui.theme.RetroRed
 import kotlinx.coroutines.launch
 
@@ -285,13 +281,22 @@ fun CreateDataList(dataDisplayViewModel: DataDisplayViewModel) {
     ) {
         items(items.size) { index ->
             when (val item = items[index]) {
-                is SleepForm -> CreateSleepListItem(item = item, dataDisplayViewModel = dataDisplayViewModel)
+                is SleepForm ->
+                    CreateDeleteSlider(
+                        onDismiss = { dataDisplayViewModel.removeSleepItem(item) }
+                    ) { CreateSleepListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
 
-                is SocialForm -> CreateSocialListItem(item = item, dataDisplayViewModel = dataDisplayViewModel)
+                is SocialForm -> CreateDeleteSlider(
+                    onDismiss = { dataDisplayViewModel.removeSocialItem(item) }
+                ) {CreateSocialListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
 
-                is SportForm -> CreateSportListItem(item = item, dataDisplayViewModel = dataDisplayViewModel)
+                is SportForm -> CreateDeleteSlider(
+                    onDismiss = { dataDisplayViewModel.removeSportItem(item) }
+                ) { CreateSportListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
 
-                is WellbeingForm -> CreateWellbeingListItem(item = item, dataDisplayViewModel = dataDisplayViewModel)
+                is WellbeingForm -> CreateDeleteSlider(
+                    onDismiss = { dataDisplayViewModel.removeWellbeingItem(item) }
+                ) { CreateWellbeingListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
 
             }
         }
@@ -305,7 +310,7 @@ fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDispl
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2, MaterialTheme.shapes.large)
+            .background(RetroDark2)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -349,7 +354,7 @@ fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewMo
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2, MaterialTheme.shapes.large)
+            .background(RetroDark2)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -385,6 +390,70 @@ fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewMo
 }
 
 @Composable
+fun CreateDeleteSlider (
+    onDismiss : () -> Unit,
+    foregroundContent: @Composable () -> Unit
+) {
+    val dismissBoxState = rememberSwipeToDismissBoxState (
+        initialValue = SwipeToDismissBoxValue.Settled,
+    )
+    val coroutineScope = rememberCoroutineScope ()
+
+    SwipeToDismissBox(
+        state = dismissBoxState,
+        enableDismissFromStartToEnd = false,
+        onDismiss = { dismissValue ->
+            if (dismissValue == SwipeToDismissBoxValue.EndToStart){
+                coroutineScope.launch {
+                    dismissBoxState.reset()
+                    onDismiss ()
+                }
+            }
+            else {
+                coroutineScope.launch {
+                    dismissBoxState.reset()
+                }
+            }
+        },
+        backgroundContent = {
+            val color by animateColorAsState(
+                when (dismissBoxState.currentValue) {
+                    SwipeToDismissBoxValue.EndToStart -> RetroRed.copy(alpha = dismissBoxState.progress)
+                    else -> Color.Transparent
+                },
+                label = "background color"
+            )
+
+            Row (
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.padding(end = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.delete_forever),
+                        contentDescription = "delete",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(40.dp)
+                    )
+                    Text(text = "Izbriši")
+                }
+            }
+        }
+    ){
+        foregroundContent()
+    }
+
+}
+
+@Composable
 fun CreateSocialListItem(
     item: SocialForm,
     dataDisplayViewModel: DataDisplayViewModel
@@ -392,7 +461,7 @@ fun CreateSocialListItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2, MaterialTheme.shapes.large)
+            .background(RetroDark2)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -461,7 +530,7 @@ fun CreateSleepListItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2, MaterialTheme.shapes.large)
+            .background(RetroDark2)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {

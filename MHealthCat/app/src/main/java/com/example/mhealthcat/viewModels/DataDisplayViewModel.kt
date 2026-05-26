@@ -67,7 +67,7 @@ class DataDisplayViewModel : ViewModel() {
     }
 
     fun changeDataType(displayName: String) {
-        _selectedDataType.value = DataType.entries.first() { it.displayName == displayName }
+        _selectedDataType.value = DataType.entries.first { it.displayName == displayName }
     }
 
     fun dataTypesAsStringList(): List<String> {
@@ -101,9 +101,17 @@ class DataDisplayViewModel : ViewModel() {
     fun returnSportChartData()     = buildChartData(returnSportRatings())
     fun returnWellbeingChartData() = buildChartData(returnWellbeingRatings())
 
-    fun removeSleepItem(item: SleepForm) { _listOfSleepData.value = _listOfSleepData.value - item }
-    fun removeSocialItem(item: SocialForm) { _listOfSocialData.value = _listOfSocialData.value - item }
-    fun removeSportItem(item: SportForm) { _listOfSportData.value = _listOfSportData.value - item }
-    fun removeWellbeingItem(item: WellbeingForm) { _listOfWellbeingData.value = _listOfWellbeingData.value - item }
+    fun removeSleepItem(item: SleepForm) {
+        _listOfSleepData.value -= item
+    }
+    fun removeSocialItem(item: SocialForm) {
+        _listOfSocialData.value -= item
+    }
+    fun removeSportItem(item: SportForm) {
+        _listOfSportData.value -= item
+    }
+    fun removeWellbeingItem(item: WellbeingForm) {
+        _listOfWellbeingData.value -= item
+    }
 
 }
