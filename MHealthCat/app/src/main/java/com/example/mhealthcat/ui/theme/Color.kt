@@ -12,13 +12,14 @@ val Pink40 = Color(0xFF7D5260)
 
 
 
-val RetroYellow = Color(0xFFFFE000)
+// Warm "wellness" palette
+val WarmGold = Color(0xFFD9A441)          // tertiary accent - mustard gold
+val SagePrimary = Color(0xFF4F7C6E)       // primary - deep sage green
+val CoralAccent = Color(0xFFE8967A)       // secondary - soft coral
+val CreamBackground = Color(0xFFFBF9F6)   // warm off-white background
+val MistSurface = Color(0xFFEFEAE3)       // warm beige surface (cards/list items)
+val TerracottaBorder = Color(0xFFC97B63)  // border accent - terracotta
+val RustError = Color(0xFFC1443C)         // muted rust red for errors/delete
 
-val RetroPurple = Color(0xFF6B00FF)
-val RetroTeal = Color(0xFF00FFC8)
-val RetroDark = Color(0xFF1A0A2E)
-
-val RetroDark2 = Color(0xFF2A0A4E)
-val RetroPixelBorder = Color(0xFFFF00A0)
-
-val RetroRed = Color(0xFFD50000)
+val InkPrimary = Color(0xFF2E2A26)        // warm charcoal text
+val StoneSecondary = Color(0xFF7A7369)    // warm grey secondary text

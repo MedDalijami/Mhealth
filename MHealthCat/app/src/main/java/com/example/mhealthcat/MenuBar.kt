@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.elementsAndClasses.AppScreen
 import com.example.mhealthcat.elementsAndClasses.CreateProfileImage
-import com.example.mhealthcat.ui.theme.RetroDark
-import com.example.mhealthcat.ui.theme.RetroDark2
-import com.example.mhealthcat.ui.theme.RetroPixelBorder
-import com.example.mhealthcat.ui.theme.RetroTeal
+import com.example.mhealthcat.ui.theme.CreamBackground
+import com.example.mhealthcat.ui.theme.MistSurface
+import com.example.mhealthcat.ui.theme.TerracottaBorder
+import com.example.mhealthcat.ui.theme.CoralAccent
 import com.example.mhealthcat.ui.theme.roboto
 import com.example.mhealthcat.viewModels.NavigationViewModel
 
@@ -136,10 +136,10 @@ fun CreateBottomMenu(
         expanded = expended,
         onDismissRequest = onDismissRequest,
         modifier = Modifier
-            .background(RetroDark)
+            .background(CreamBackground)
             .border(
                 width = 3.dp,
-                color = RetroPixelBorder,
+                color = TerracottaBorder,
                 shape = RectangleShape
             )
             .animateContentSize(
@@ -166,7 +166,7 @@ fun CreateBottomMenu(
                             text = label,
                             fontFamily = roboto,
                             fontSize = 15.sp,
-                            color = RetroTeal,
+                            color = CoralAccent,
                             letterSpacing = 1.sp
                         )
                     }
@@ -178,15 +178,15 @@ fun CreateBottomMenu(
                     .fillMaxWidth()
                     .background(
                         if (index % 2 == 0) {
-                            RetroDark
+                            CreamBackground
                         } else {
-                            RetroDark2
+                            MistSurface
                         }
                     )
             )
             if (index != itemsList.lastIndex) {
                 HorizontalDivider(
-                    color = RetroPixelBorder.copy(alpha = 0.4f),
+                    color = TerracottaBorder.copy(alpha = 0.4f),
                     thickness = 1.dp
                 )
             }

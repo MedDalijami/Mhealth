@@ -9,11 +9,12 @@ import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.forms.WellbeingForm
 import com.example.mhealthcat.testData.TestData
-import com.example.mhealthcat.ui.theme.RetroPixelBorder
-import com.example.mhealthcat.ui.theme.RetroPurple
-import com.example.mhealthcat.ui.theme.RetroRed
-import com.example.mhealthcat.ui.theme.RetroTeal
-import com.example.mhealthcat.ui.theme.RetroYellow
+import com.example.mhealthcat.ui.theme.CoralAccent
+import com.example.mhealthcat.ui.theme.RustError
+import com.example.mhealthcat.ui.theme.SagePrimary
+import com.example.mhealthcat.ui.theme.TerracottaBorder
+import com.example.mhealthcat.ui.theme.WarmGold
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.text.SimpleDateFormat
@@ -29,7 +30,7 @@ class DataDisplayViewModel : ViewModel() {
 
     private val _selectedDataType = MutableStateFlow(DataType.SLEEP)
 
-    private val _sliceColors = listOf(RetroRed, RetroYellow, RetroTeal, RetroPixelBorder, RetroPurple)
+    private val _sliceColors = listOf(RustError, WarmGold, CoralAccent, TerracottaBorder, SagePrimary)
     private val _graphView = MutableStateFlow(true)
 
 

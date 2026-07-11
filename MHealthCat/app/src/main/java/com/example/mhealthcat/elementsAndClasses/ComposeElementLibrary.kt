@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -55,9 +56,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.mhealthcat.R
-import com.example.mhealthcat.ui.theme.RetroPixelBorder
-import com.example.mhealthcat.ui.theme.RetroPurple
-import com.example.mhealthcat.ui.theme.RetroYellow
+import com.example.mhealthcat.ui.theme.InkPrimary
+import com.example.mhealthcat.ui.theme.StoneSecondary
+import com.example.mhealthcat.ui.theme.SagePrimary
+import com.example.mhealthcat.ui.theme.TerracottaBorder
+import com.example.mhealthcat.ui.theme.MistSurface
+import com.example.mhealthcat.ui.theme.RustError
+import com.example.mhealthcat.ui.theme.WarmGold
 import com.example.mhealthcat.ui.theme.roboto
 
 
@@ -65,7 +70,7 @@ import com.example.mhealthcat.ui.theme.roboto
 @Composable
 fun CreateProfileImage (
     modifier: Modifier = Modifier,
-    color: Color = RetroPixelBorder,
+    color: Color = TerracottaBorder,
     imgRes: Int? = null,
     imgUri: Uri? = null,
     description: String,
@@ -101,7 +106,7 @@ fun CreateProfileImage (
 fun CreateOutlineButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    border: BorderStroke = BorderStroke(width = 3.dp, color = RetroPixelBorder),
+    border: BorderStroke = BorderStroke(width = 3.dp, color = TerracottaBorder),
     buttonText: String,
     fontFamily: FontFamily = roboto,
     fontSize: TextUnit = 20.sp,
@@ -110,14 +115,18 @@ fun CreateOutlineButton(
     OutlinedButton(
         modifier = modifier,
         onClick = onClick,
-        border = if (enabled) border else BorderStroke(width = 3.dp, color = Color.Gray),
-        enabled = enabled
+        border = if (enabled) border else BorderStroke(width = 3.dp, color = StoneSecondary),
+        enabled = enabled,
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = InkPrimary,
+            disabledContentColor = StoneSecondary
+        )
     ) {
         Text(
             text = buttonText,
             fontSize = fontSize,
             fontFamily = fontFamily,
-            color = Color.White
+            color = if (enabled) InkPrimary else StoneSecondary
         )
     }
 }
@@ -156,12 +165,12 @@ fun CreateTextField (
             }
         },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color.White,
-            unfocusedBorderColor = Color.White,
-            errorBorderColor = Color.Red,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            cursorColor = Color.White
+            focusedBorderColor = SagePrimary,
+            unfocusedBorderColor = TerracottaBorder,
+            errorBorderColor = RustError,
+            focusedTextColor = InkPrimary,
+            unfocusedTextColor = InkPrimary,
+            cursorColor = InkPrimary
         ),
         textStyle = TextStyle(
             fontFamily = roboto,
@@ -185,7 +194,7 @@ fun ShowUserErrorText(
                 .padding(20.dp),
             fontSize = 15.sp,
             fontFamily = roboto,
-            color = Color.Red,
+            color = RustError,
             textAlign = TextAlign.Center
         )
     }
@@ -207,10 +216,10 @@ fun CreateTimeDial (
         TimeInput(
             state = timePickerState,
             colors = TimePickerDefaults.colors(
-                timeSelectorSelectedContainerColor = RetroPurple,
-                timeSelectorUnselectedContainerColor = Color.Transparent,
+                timeSelectorSelectedContainerColor = SagePrimary,
+                timeSelectorUnselectedContainerColor = MistSurface,
                 timeSelectorSelectedContentColor = Color.White,
-                timeSelectorUnselectedContentColor = Color.White.copy(0.5f),
+                timeSelectorUnselectedContentColor = InkPrimary,
                 containerColor = Color.Transparent
             )
         )
@@ -459,7 +468,7 @@ fun CreateStarRating(
                             else R.drawable.star_filled
                         ),
                         contentDescription = "Zvezda $star",
-                        tint = RetroYellow,
+                        tint = WarmGold,
                         modifier = starIconModifier.clickable {
                             onRatingChange(star)
                         }
@@ -481,7 +490,7 @@ fun ProfileImage(
     profilePictureUri: Uri?,
     photoPickerLauncher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     buttonVisible: Boolean = true,
-    border: BorderStroke = BorderStroke(width = 3.dp, color = RetroPixelBorder),
+    border: BorderStroke = BorderStroke(width = 3.dp, color = TerracottaBorder),
     fontFamily: FontFamily = roboto,
     fontSize: TextUnit = 20.sp,
     buttonText: String = "Izberi profilno sliko"
@@ -497,7 +506,7 @@ fun ProfileImage(
             modifier = Modifier
                 .size(160.dp)
                 .aspectRatio(1f),
-            color = Color.White,
+            color = SagePrimary,
             imgRes = if (profilePictureUri == null) R.drawable.user_menu else null,
             imgUri = profilePictureUri,
             description = "Profile picture"

@@ -37,8 +37,8 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.elementsAndClasses.CreateTextField
 import com.example.mhealthcat.elementsAndClasses.ProfileImage
 import com.example.mhealthcat.R
-import com.example.mhealthcat.ui.theme.RetroPurple
-import com.example.mhealthcat.ui.theme.RetroRed
+import com.example.mhealthcat.ui.theme.SagePrimary
+import com.example.mhealthcat.ui.theme.RustError
 import com.example.mhealthcat.viewModels.NavigationViewModel
 import com.example.mhealthcat.viewModels.UserViewModel
 
@@ -109,7 +109,7 @@ fun CreateUserInfo(
         ProfileImage(
             profilePictureUri = userProfile.profilePictureUri,
             photoPickerLauncher = photoPickerLauncher,
-            border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary),
+            border = BorderStroke(width = 3.dp, color = SagePrimary),
             buttonVisible = editing
 
         )
@@ -179,7 +179,7 @@ fun EditPassword(userViewModel: UserViewModel) {
                 .size(160.dp)
                 .padding(bottom = 25.dp)
                 .aspectRatio(1f),
-            color = Color.White,
+            color = SagePrimary,
             imgRes = R.drawable.user_menu,
             imgUri = userProfile.profilePictureUri,
             description = "Profile picture",
@@ -275,7 +275,7 @@ fun CreateUserProfileButtonsView (
         },
         buttonText = "Izpis iz profila",
         fontSize = 18.sp,
-        border = BorderStroke(width = 3.dp, color = RetroRed)
+        border = BorderStroke(width = 3.dp, color = RustError)
     )
 }
 
@@ -359,7 +359,7 @@ fun CreateUserProfileButtonsPassword (
             },
             buttonText = "Prekliči",
             fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = RetroPurple)
+            border = BorderStroke(width = 3.dp, color = SagePrimary)
         )
 
         Spacer(modifier = Modifier.width(10.dp))
@@ -371,7 +371,7 @@ fun CreateUserProfileButtonsPassword (
             },
             buttonText = "Shrani",
             fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = RetroPurple),
+            border = BorderStroke(width = 3.dp, color = SagePrimary),
             enabled = allowPasswordSubmit
         )
     }

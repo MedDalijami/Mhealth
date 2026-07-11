@@ -50,10 +50,12 @@ import com.example.mhealthcat.forms.SleepForm
 import com.example.mhealthcat.forms.SocialForm
 import com.example.mhealthcat.forms.SportForm
 import com.example.mhealthcat.forms.WellbeingForm
-import com.example.mhealthcat.ui.theme.RetroDark2
-import com.example.mhealthcat.ui.theme.RetroPurple
+import com.example.mhealthcat.ui.theme.MistSurface
+import com.example.mhealthcat.ui.theme.SagePrimary
+import com.example.mhealthcat.ui.theme.RustError
+import com.example.mhealthcat.ui.theme.InkPrimary
+import com.example.mhealthcat.ui.theme.StoneSecondary
 import com.example.mhealthcat.R
-import com.example.mhealthcat.ui.theme.RetroRed
 import kotlinx.coroutines.launch
 
 @Composable
@@ -175,7 +177,7 @@ fun CreateToggle(
                 label = { Text(label) },
                 icon = {},
                 colors = SegmentedButtonDefaults.colors(
-                    activeContainerColor = RetroPurple
+                    activeContainerColor = SagePrimary
                 )
             )
 
@@ -241,12 +243,12 @@ fun CreateGraph(
                 Text(
                     text = centerText,
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
+                    color = InkPrimary
                 )
                 Text(
                     text = centerLabel,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.6f)
+                    color = StoneSecondary
                 )
             }
         }
@@ -310,7 +312,7 @@ fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDispl
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2)
+            .background(MistSurface)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -354,7 +356,7 @@ fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewMo
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2)
+            .background(MistSurface)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -418,7 +420,7 @@ fun CreateDeleteSlider (
         backgroundContent = {
             val color by animateColorAsState(
                 when (dismissBoxState.currentValue) {
-                    SwipeToDismissBoxValue.EndToStart -> RetroRed.copy(alpha = dismissBoxState.progress)
+                    SwipeToDismissBoxValue.EndToStart -> RustError.copy(alpha = dismissBoxState.progress)
                     else -> Color.Transparent
                 },
                 label = "background color"
@@ -461,7 +463,7 @@ fun CreateSocialListItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2)
+            .background(MistSurface)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -530,7 +532,7 @@ fun CreateSleepListItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(RetroDark2)
+            .background(MistSurface)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
