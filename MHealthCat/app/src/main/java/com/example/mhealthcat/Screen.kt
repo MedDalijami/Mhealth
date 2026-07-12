@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.elementsAndClasses.AppScreen
 import com.example.mhealthcat.screens.Data
+import com.example.mhealthcat.screens.Home
 import com.example.mhealthcat.screens.LogIn
 import com.example.mhealthcat.screens.SignUp
 import com.example.mhealthcat.screens.Sleep
@@ -48,7 +49,7 @@ fun Screen(modifier: Modifier = Modifier) {
             colors = CardDefaults.cardColors(Color.Transparent)
         ) {
             when (currentScreen) {
-                AppScreen.Home -> Text("")
+                AppScreen.Home -> Home()
 
                 AppScreen.LogIn -> LogIn()
 

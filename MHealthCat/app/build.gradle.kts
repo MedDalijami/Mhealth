@@ -65,4 +65,8 @@ dependencies {
     // For image picker
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // video
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 }
