@@ -49,7 +49,10 @@ class SleepViewModel : ViewModel() {
         _sleepForm.value = SleepForm()
     }
 
-
+    fun cancelForm() {
+        clearForm()
+        toggleShowFormOff()
+    }
 
 
 }

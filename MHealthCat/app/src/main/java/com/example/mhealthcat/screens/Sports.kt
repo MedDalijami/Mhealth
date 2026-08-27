@@ -133,8 +133,9 @@ fun CreateSportForm(
                 sportViewModel.updateTime(hours = timePickerState.hour, minutes = timePickerState.minute)
                 showAlert = true
             },
-            setButtonText = "Zabeleži športanje",
-            timePickerState = timePickerState
+            setButtonText = "Zabeleži",
+            timePickerState = timePickerState,
+            onCancelButtonClicked = { sportViewModel.cancelForm()}
         )
     }
 

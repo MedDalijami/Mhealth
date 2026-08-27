@@ -67,6 +67,8 @@ fun Sleep() {
                 onClick = { sleepViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo spanje"
             )
+
+
         } else {
             // form
 
@@ -117,9 +119,13 @@ private fun CreateSleepForm(
                 sleepViewModel.updateTime(timePickerState.hour, timePickerState.minute)
                 showAlert = true
             },
-            setButtonText = "Zabeleži spanec",
-            timePickerState = timePickerState
+            setButtonText = "Zabeleži",
+            timePickerState = timePickerState,
+            onCancelButtonClicked = { sleepViewModel.cancelForm() }
         )
+
+
+
     }
 
     if (showAlert) {

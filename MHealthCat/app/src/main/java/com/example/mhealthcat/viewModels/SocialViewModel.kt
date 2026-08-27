@@ -75,4 +75,11 @@ class SocialViewModel: ViewModel() {
 
     }
 
+    fun cancelForm() {
+        clearForm()
+        toggleShowFormOff()
+    }
+
+
+
 }

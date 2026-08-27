@@ -3,6 +3,7 @@ package com.example.mhealthcat.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -118,10 +119,22 @@ fun CreateWellbeingForm (
             onValueChange = { wellbeingViewModel.updateSomethingGoodThatHappened(it) }
         )
 
-        CreateOutlineButton(
-            onClick = {showAlert = true},
-            buttonText = "Zabeleži današnje počutje"
-        )
+        Row(
+            modifier = Modifier.padding(top = 15.dp),
+            horizontalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = { wellbeingViewModel.cancelForm() },
+                buttonText = "Prekliči"
+            )
+
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = {showAlert = true},
+                buttonText = "Zabeleži"
+            )
+    }
     }
 
     if (showAlert) {

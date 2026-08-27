@@ -55,5 +55,8 @@ class WellbeingViewModel: ViewModel() {
         }
         else println("Narobe izpolnjeni podatki o počutju")
     }
-
+    fun cancelForm() {
+        clearForm()
+        toggleShowFormOff()
+    }
 }

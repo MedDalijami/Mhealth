@@ -56,4 +56,11 @@ class SportViewModel: ViewModel() {
 
     }
 
+    fun cancelForm() {
+        clearForm()
+        toggleShowFormOff()
+    }
+
+
+
 }

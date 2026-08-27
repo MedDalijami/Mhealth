@@ -211,7 +211,9 @@ fun CreateTimeDial (
     modifier: Modifier = Modifier,
     onConfirmButtonClicked: () -> Unit,
     setButtonText: String,
-    timePickerState: TimePickerState
+    timePickerState: TimePickerState,
+    onCancelButtonClicked: (() -> Unit)? = null,
+    cancelButtonText: String = "Prekliči"
 ) {
 
     Column(
@@ -229,10 +231,31 @@ fun CreateTimeDial (
             )
         )
 
-        CreateOutlineButton(
-            onClick = onConfirmButtonClicked,
-            buttonText = setButtonText
-        )
+        if (onCancelButtonClicked != null) {
+            Row(
+                modifier = Modifier.padding(top = 15.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
+            ) {
+
+                CreateOutlineButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onCancelButtonClicked,
+                    buttonText = cancelButtonText
+                )
+
+                CreateOutlineButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onConfirmButtonClicked,
+                    buttonText = setButtonText
+                )
+            }
+        } else {
+            CreateOutlineButton(
+                modifier = Modifier.padding(top = 15.dp),
+                onClick = onConfirmButtonClicked,
+                buttonText = setButtonText
+            )
+        }
 
     }
 }

@@ -170,8 +170,9 @@ fun CreateSocialForm(
                     socialViewModel.updateTime(timePickerState.hour, timePickerState.minute)
                     showAlert = true
                 },
-                setButtonText = "Zabeleži druženje",
-                timePickerState = timePickerState
+                setButtonText = "Zabeleži",
+                timePickerState = timePickerState,
+                onCancelButtonClicked = { socialViewModel.cancelForm() }
             )
         }
     }
