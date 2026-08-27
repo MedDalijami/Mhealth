@@ -1,6 +1,7 @@
 package com.example.mhealthcat.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,8 @@ import com.example.mhealthcat.elementsAndClasses.CreateTimeDial
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.viewModels.SportViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mhealthcat.R
+import com.example.mhealthcat.elementsAndClasses.BackgroundAnimation
 
 @Composable
 fun Sports() {
@@ -45,6 +48,18 @@ fun Sports() {
 
         if (!showForm) {
             // Basic screen
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                BackgroundAnimation(
+                    modifier = Modifier.size(500.dp),
+                    videoResId = R.raw.cat_sports
+                )
+            }
+
             CreateOutlineButton(
                 onClick = { sportViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo športno aktivnost"

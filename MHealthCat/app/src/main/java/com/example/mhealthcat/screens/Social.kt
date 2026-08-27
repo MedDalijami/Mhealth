@@ -2,6 +2,7 @@ package com.example.mhealthcat.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mhealthcat.R
+import com.example.mhealthcat.elementsAndClasses.BackgroundAnimation
 import com.example.mhealthcat.elementsAndClasses.CreateAlert
 import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.elementsAndClasses.CreateSelectMenu
@@ -47,13 +50,24 @@ fun Social() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
-
-
         if (showForm) {
+
             CreateSocialForm(
                 socialViewModel = socialViewModel
             )
         } else {
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                BackgroundAnimation(
+                    modifier = Modifier.size(500.dp),
+                    videoResId = R.raw.cat_friends
+                )
+            }
             CreateOutlineButton(
                 onClick = { socialViewModel.toggleShowFormOn() },
                 buttonText = "Zabeleži novo druženje"

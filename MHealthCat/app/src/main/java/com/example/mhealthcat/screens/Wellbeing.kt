@@ -1,8 +1,10 @@
 package com.example.mhealthcat.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mhealthcat.R
+import com.example.mhealthcat.elementsAndClasses.BackgroundAnimation
 import com.example.mhealthcat.elementsAndClasses.CreateAlert
 import com.example.mhealthcat.elementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
@@ -42,6 +46,18 @@ fun Wellbeing() {
 
         if (!showForm) {
             // Basic screen
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                BackgroundAnimation(
+                    modifier = Modifier.size(500.dp),
+                    videoResId = R.raw.general_feelings
+                )
+            }
+
             CreateOutlineButton(
                 onClick = {
                     wellbeingViewModel.toggleShowFormOn()
