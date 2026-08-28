@@ -74,8 +74,7 @@ class LogInViewModel : ViewModel(){
 
     fun logIn(): Boolean {
         return if (validateForm()) {
-            println("Uspešna prijava." +
-                    _logInForm.value)
+            println("Uspešna prijava.")
             toggleShowErrorOff()
             clearForm()
             true

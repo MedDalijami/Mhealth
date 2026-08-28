@@ -71,6 +71,7 @@ fun LogIn () {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         if (logInViewModel.logIn()){
+                            navigationViewModel.isLoggedIn(true)
                             navigationViewModel.changeToScreen(AppScreen.Home)
                         }
                     },

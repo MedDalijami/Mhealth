@@ -271,6 +271,7 @@ fun CreateUserProfileButtonsView (
             .padding( start = 20.dp, end = 20.dp, top = 10.dp),
         onClick = {
             userViewModel.clearUserProfile()
+            navigationViewModel.isLoggedIn(false)
             navigationViewModel.changeToScreen(AppScreen.LogIn)
         },
         buttonText = "Izpis iz profila",
