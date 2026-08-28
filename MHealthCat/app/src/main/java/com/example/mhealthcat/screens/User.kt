@@ -196,11 +196,12 @@ fun EditPassword(userViewModel: UserViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                textFieldValue = userProfile.password,
+                textFieldValue = userViewModel.currentPasswordInput.collectAsState().value,
                 onValueChange = { userViewModel.updateCurrentPassword(it) },
                 placeholder = "Vaše trenutno geslo",
                 isValid = userViewModel.isValidPassword(),
-                errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro"
+                errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro",
+                isPassword = true
             )
             CreateTextField(
                 modifier = Modifier
@@ -210,7 +211,8 @@ fun EditPassword(userViewModel: UserViewModel) {
                 onValueChange = { userViewModel.updateNewPassword(it) },
                 placeholder = "Vaše novo geslo",
                 isValid = userViewModel.isValidNewPassword(),
-                errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro"
+                errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro",
+                isPassword = true
             )
 
             CreateTextField(
@@ -221,7 +223,8 @@ fun EditPassword(userViewModel: UserViewModel) {
                 onValueChange = { userViewModel.updateNewPasswordRepeat(it) },
                 placeholder = "Ponovite novo geslo",
                 isValid = userViewModel.isValidPasswordRepeat(),
-                errorMsg = "Vnešeni gesli se ne ujemata"
+                errorMsg = "Vnešeni gesli se ne ujemata",
+                isPassword = true
             )
 
             Spacer(modifier = Modifier.weight(1f))

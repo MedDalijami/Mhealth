@@ -87,8 +87,7 @@ class SignUpViewModel: ViewModel() {
 
     fun signUp(): Boolean {
         return if (userDoesNotExist(_signUpForm.value.email)) {
-            println("Uspešna registracija." +
-                    _signUpForm.value)
+            println("Uspešna registracija.")
             toggleShowErrorOff()
             clearForm()
             true

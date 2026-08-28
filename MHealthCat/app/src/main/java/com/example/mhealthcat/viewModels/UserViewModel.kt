@@ -13,13 +13,16 @@ class UserViewModel : ViewModel() {
     private val _userProfileActual = MutableStateFlow(UserProfile(
         email = "testni@uporabnik.si",
         name = "Jana",
-        lastName = "Novak",
-        password = "testni123"
-    ))
+        lastName = "Novak"
+        ))
 
 
     // Copy of the data that can be edited
-    private val _userProfile = MutableStateFlow( _userProfileActual.value.copy(password = ""))
+    private val _userProfile = MutableStateFlow( _userProfileActual.value)
+
+    //Stored credentials -- placeholder for authenticator
+    private var _storedPassword = "testni123"
+    private val _currentPasswordInput = MutableStateFlow<String>("")
 
     private val _editingProfile = MutableStateFlow(false)
     private val _editingPassword = MutableStateFlow(false)
@@ -32,6 +35,7 @@ class UserViewModel : ViewModel() {
 
 
     val userProfile: StateFlow<UserProfile> = _userProfile
+    val currentPasswordInput: StateFlow<String> = _currentPasswordInput
     val editingProfile: StateFlow<Boolean> = _editingProfile
     val editingPassword: StateFlow<Boolean> = _editingPassword
 
@@ -55,7 +59,7 @@ class UserViewModel : ViewModel() {
     }
 
     fun clearPasswords() {
-        _userProfile.value = _userProfile.value.copy(password = "")
+        _currentPasswordInput.value = ""
         _newPassword.value = ""
         _newPasswordRepeat.value = ""
     }
@@ -81,8 +85,8 @@ class UserViewModel : ViewModel() {
     }
 
     fun isValidPassword() : Boolean {
-        val form = _userProfile.value
-        return form.password.length >= 8 && form.password.any { it.isDigit() }
+        val password = currentPasswordInput.value
+        return password.length >= 8 && password.any { it.isDigit() }
     }
 
     fun isValidNewPassword() : Boolean {
@@ -124,7 +128,7 @@ class UserViewModel : ViewModel() {
     }
 
     fun updateCurrentPassword(password: String) {
-        _userProfile.value = _userProfile.value.copy(password = password)
+        _currentPasswordInput.value = password
         toggleAllowEditPasswordSubmit()
     }
 
@@ -140,12 +144,11 @@ class UserViewModel : ViewModel() {
 
 
     fun isPasswordCorrect(): Boolean {
-        return _userProfile.value.password == _userProfileActual.value.password
+        return _currentPasswordInput.value == _storedPassword
     }
 
     fun saveNewPassword() {
-        _userProfileActual.value = _userProfileActual.value.copy(password = _newPassword.value)
-
+        _storedPassword = newPassword.value
     }
 
     fun toggleAllowEditPasswordSubmit() {

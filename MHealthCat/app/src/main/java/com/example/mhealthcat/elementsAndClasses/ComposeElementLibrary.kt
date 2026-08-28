@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +53,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -143,13 +147,19 @@ fun CreateTextField (
     isValid: Boolean = true,
     enabled: Boolean = true,
     placeholder: String = textFieldValue,
-    errorMsg: String = "Prišlo je do napake"
+    errorMsg: String = "Prišlo je do napake",
+    isPassword: Boolean = false,
+    isDigit: Boolean = false
 ) {
     OutlinedTextField(
         value = textFieldValue,
         modifier = modifier,
         enabled = enabled,
         onValueChange = { onValueChange(it) },
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = if (isPassword) KeyboardType.Password else if(isDigit) KeyboardType.Decimal else KeyboardType.Text
+        ),
         placeholder = {
             Text(
                 text = placeholder,

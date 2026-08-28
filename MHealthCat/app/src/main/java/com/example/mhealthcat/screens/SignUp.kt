@@ -91,7 +91,7 @@ fun SignUp (){
 
     ShowUserErrorText(
         errorPresent = showError,
-        errorText = "Vnesen e-mail naslov že obstaja. Prosimo uporabite drug e-mail naslov.")
+        errorText = "Prišlo je do napake ob registraciji, e-poštni naslov je že registriran")
     }
 
 
@@ -133,7 +133,8 @@ fun CreateSignUpForm(
             onValueChange = { signUpViewModel.updatePassword(it) },
             placeholder = "Geslo",
             isValid = signUpViewModel.isValidPassword(),
-            errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro"
+            errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro",
+            isPassword = true
         )
         CreateTextField(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
@@ -141,7 +142,8 @@ fun CreateSignUpForm(
             onValueChange = { signUpViewModel.updatePasswordRepeat(it) },
             placeholder = "Prosim ponovite geslo",
             isValid = signUpViewModel.isValidPasswordRepeat(),
-            errorMsg = "Vnešeni gesli se ne ujemata"
+            errorMsg = "Vnešeni gesli se ne ujemata",
+            isPassword = true
         )
     }
 }

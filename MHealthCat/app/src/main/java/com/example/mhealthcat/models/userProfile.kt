@@ -8,7 +8,6 @@ data class UserProfile(
     val email: String = "",
     val name: String = "",
     val lastName: String = "",
-    val password: String = "",
     val profilePictureUri: Uri? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

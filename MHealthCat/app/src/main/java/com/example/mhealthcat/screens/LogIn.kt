@@ -118,7 +118,8 @@ private fun CreateLoginForm(
         onValueChange = { logInViewModel.updatePassword(it) },
         isValid = logInViewModel.isValidPassword(),
         placeholder = "geslo",
-        errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro"
+        errorMsg = "Geslo mora vsebovati 8 znakov in vsaj eno cifro",
+        isPassword = true
     )
 
 }
