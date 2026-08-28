@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.asStateFlow
 class WellbeingViewModel: ViewModel() {
     private val _wellbeingForm = MutableStateFlow(WellbeingForm())
     private val _showForm = MutableStateFlow(false)
+    private val _showValidationError = MutableStateFlow(false)
 
     val showForm: StateFlow<Boolean> = _showForm.asStateFlow()
     val wellbeingForm: StateFlow<WellbeingForm> = _wellbeingForm.asStateFlow()
+    val showValidationError: StateFlow<Boolean> = _showValidationError.asStateFlow()
+
 
     fun toggleShowFormOn() {
         _showForm.value = true
@@ -40,6 +43,7 @@ class WellbeingViewModel: ViewModel() {
 
     fun clearForm() {
         _wellbeingForm.value = WellbeingForm()
+        _showValidationError.value = false
     }
 
     fun validateForm(): Boolean {
@@ -48,12 +52,18 @@ class WellbeingViewModel: ViewModel() {
     }
 
     fun submitForm() {
-        if (validateForm()) {
-            println("Podatki o počutju so shranjeni")
-            toggleShowFormOff()
-            clearForm()
+        toggleShowFormOff()
+        clearForm()
+    }
+
+    fun attemptSubmit(): Boolean {
+        return if (validateForm()) {
+            _showValidationError.value = false
+            true
+        } else {
+            _showValidationError.value = true
+            false
         }
-        else println("Narobe izpolnjeni podatki o počutju")
     }
     fun cancelForm() {
         clearForm()

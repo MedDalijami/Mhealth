@@ -27,6 +27,7 @@ import com.example.mhealthcat.elementsAndClasses.CreateAlert
 import com.example.mhealthcat.elementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.elementsAndClasses.CreateStarRating
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.viewModels.WellbeingViewModel
 
@@ -78,6 +79,7 @@ fun CreateWellbeingForm (
 ) {
     val wellbeingForm by wellbeingViewModel.wellbeingForm.collectAsState()
     var showAlert by remember { mutableStateOf(false) }
+    val showValidationError by wellbeingViewModel.showValidationError.collectAsState()
 
     Column(
         modifier = Modifier
@@ -131,16 +133,23 @@ fun CreateWellbeingForm (
 
             CreateOutlineButton(
                 modifier = Modifier.weight(1f),
-                onClick = {showAlert = true},
+                onClick = {
+                    if (wellbeingViewModel.attemptSubmit()){
+                        showAlert = true
+                    }
+                },
                 buttonText = "Zabeleži"
             )
-    }
+        }
+        ShowUserErrorText(
+            errorPresent = showValidationError,
+            errorText = "Prosim izpolnite vsa polja"
+        )
     }
 
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                wellbeingViewModel.clearForm()
                 showAlert = false
             },
             onConfirm = {

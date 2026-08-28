@@ -30,6 +30,7 @@ import com.example.mhealthcat.elementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.elementsAndClasses.CreateOutlineButton
 import com.example.mhealthcat.elementsAndClasses.CreateStarRating
 import com.example.mhealthcat.elementsAndClasses.CreateTimeDial
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.viewModels.SleepViewModel
 
@@ -71,7 +72,6 @@ fun Sleep() {
 
         } else {
             // form
-
             CreateSleepForm(sleepViewModel = sleepViewModel)
         }
     }
@@ -86,6 +86,7 @@ private fun CreateSleepForm(
 ) {
     val sleepForm by sleepViewModel.sleepForm.collectAsState()
     var showAlert by remember { mutableStateOf(false) }
+    val showValidationError by sleepViewModel.showValidationError.collectAsState()
 
     val timePickerState = rememberTimePickerState(
         initialHour = sleepForm.hours,
@@ -117,11 +118,18 @@ private fun CreateSleepForm(
         CreateTimeDial(
             onConfirmButtonClicked = {
                 sleepViewModel.updateTime(timePickerState.hour, timePickerState.minute)
-                showAlert = true
+                if (sleepViewModel.attemptSubmit()){
+                    showAlert = true
+                }
             },
             setButtonText = "Zabeleži",
             timePickerState = timePickerState,
             onCancelButtonClicked = { sleepViewModel.cancelForm() }
+        )
+
+        ShowUserErrorText(
+            errorPresent = showValidationError,
+            errorText = "Prosim izpolnite vsa polja"
         )
 
 
@@ -131,9 +139,6 @@ private fun CreateSleepForm(
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                sleepViewModel.clearForm()
-                timePickerState.hour = 0
-                timePickerState.minute = 0
                 showAlert = false
             },
             onConfirm = {

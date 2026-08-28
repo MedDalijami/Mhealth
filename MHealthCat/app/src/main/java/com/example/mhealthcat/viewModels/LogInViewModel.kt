@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.forms.LogInForm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class LogInViewModel : ViewModel(){
     private val _showError = MutableStateFlow(false)
@@ -13,10 +14,10 @@ class LogInViewModel : ViewModel(){
 
 
 
-    val showError: StateFlow<Boolean> = _showError
-    val logInForm: StateFlow<LogInForm> = _logInForm
+    val showError: StateFlow<Boolean> = _showError.asStateFlow()
+    val logInForm: StateFlow<LogInForm> = _logInForm.asStateFlow()
 
-    val allowSubmit: StateFlow<Boolean> = _allowSubmit
+    val allowSubmit: StateFlow<Boolean> = _allowSubmit.asStateFlow()
 
 
     fun toggleShowErrorOn() {

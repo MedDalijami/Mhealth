@@ -11,8 +11,13 @@ class SocialViewModel: ViewModel() {
     private val _socialForm = MutableStateFlow(SocialForm())
     private val _showForm = MutableStateFlow(false)
 
+    private val _showValidationError = MutableStateFlow(false)
+
+
     val socialForm: StateFlow<SocialForm> = _socialForm.asStateFlow()
     val showForm: StateFlow<Boolean> = _showForm.asStateFlow()
+
+    val showValidationError: StateFlow<Boolean> = _showValidationError.asStateFlow()
 
     val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci, Sodelavci", "Drugo")
 
@@ -59,6 +64,7 @@ class SocialViewModel: ViewModel() {
 
     fun clearForm() {
         _socialForm.value = SocialForm()
+        _showValidationError.value = false
     }
 
     fun validateForm(): Boolean {
@@ -66,13 +72,19 @@ class SocialViewModel: ViewModel() {
         return form.people.isNotEmpty() && form.comment.isNotEmpty() && (form.hours > 0 || form.minutes > 0)
     }
 
-    fun submitForm() {
-        if (validateForm()) {
-            println("Podatki o druženju so shranjeni.")
-            toggleShowFormOff()
-            clearForm()
-        } else println("Narobe izpolnjeni podatki o druženju.")
+    fun attemptSubmit(): Boolean {
+        return if (validateForm()) {
+            _showValidationError.value = false
+            true
+        } else {
+            _showValidationError.value = true
+            false
+        }
+    }
 
+    fun submitForm() {
+        toggleShowFormOff()
+        clearForm()
     }
 
     fun cancelForm() {

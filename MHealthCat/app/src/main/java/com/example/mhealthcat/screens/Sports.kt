@@ -31,6 +31,7 @@ import com.example.mhealthcat.viewModels.SportViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.R
 import com.example.mhealthcat.elementsAndClasses.BackgroundAnimation
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 
 @Composable
 fun Sports() {
@@ -79,6 +80,7 @@ fun CreateSportForm(
 
     val sportForm by sportViewModel.sportForm.collectAsState()
     var showAlert by remember { mutableStateOf(false) }
+    val showValidationError by sportViewModel.showValidationError.collectAsState()
 
 
 
@@ -131,20 +133,23 @@ fun CreateSportForm(
         CreateTimeDial(
             onConfirmButtonClicked = {
                 sportViewModel.updateTime(hours = timePickerState.hour, minutes = timePickerState.minute)
-                showAlert = true
+                if (sportViewModel.attemptSubmit()) {
+                    showAlert = true
+                }
             },
             setButtonText = "Zabeleži",
             timePickerState = timePickerState,
             onCancelButtonClicked = { sportViewModel.cancelForm()}
+        )
+        ShowUserErrorText(
+            errorPresent = showValidationError,
+            errorText = "Prosim izpolnite vsa polja"
         )
     }
 
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                sportViewModel.clearForm()
-                timePickerState.hour = 0
-                timePickerState.minute = 0
                 showAlert = false
             },
             onConfirm = {

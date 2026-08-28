@@ -11,8 +11,11 @@ class SportViewModel: ViewModel() {
     private val _sportForm = MutableStateFlow(SportForm())
     private val _showForm = MutableStateFlow(false)
 
+    private val _showValidationError = MutableStateFlow(false)
+
     val sportForm: StateFlow<SportForm> = _sportForm.asStateFlow()
     val showForm: StateFlow<Boolean> = _showForm.asStateFlow()
+    val showValidationError: StateFlow<Boolean> = _showValidationError.asStateFlow()
 
     fun toggleShowFormOn() {
         _showForm.value = true
@@ -40,6 +43,7 @@ class SportViewModel: ViewModel() {
 
     fun clearForm() {
         _sportForm.value = SportForm()
+        _showValidationError.value = false
     }
 
     fun validateForm(): Boolean {
@@ -48,12 +52,18 @@ class SportViewModel: ViewModel() {
     }
 
     fun submitForm() {
-        if (validateForm()) {
-            println("Podatki o športanju so shranjeni.")
-            toggleShowFormOff()
-            clearForm()
-        } else println("Narobe izpolnjeni podatki o športanju.")
+        toggleShowFormOff()
+        clearForm()
+    }
 
+    fun attemptSubmit(): Boolean {
+        return if (validateForm()) {
+            _showValidationError.value = false
+            true
+        } else {
+            _showValidationError.value = true
+            false
+        }
     }
 
     fun cancelForm() {

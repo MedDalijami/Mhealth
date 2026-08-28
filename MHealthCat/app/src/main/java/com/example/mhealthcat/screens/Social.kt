@@ -35,6 +35,7 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.elementsAndClasses.CreateStepper
 import com.example.mhealthcat.elementsAndClasses.CreateCommentBox
 import com.example.mhealthcat.elementsAndClasses.CreateStarRating
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.viewModels.SocialViewModel
 
 
@@ -88,6 +89,7 @@ fun CreateSocialForm(
 ) {
     var showAlert by remember { mutableStateOf(false) }
     val socialForm by socialViewModel.socialForm.collectAsState()
+    val showValidationError by socialViewModel.showValidationError.collectAsState()
 
     val peopleList = socialViewModel.peopleList
 
@@ -168,21 +170,24 @@ fun CreateSocialForm(
             CreateTimeDial(
                 onConfirmButtonClicked = {
                     socialViewModel.updateTime(timePickerState.hour, timePickerState.minute)
-                    showAlert = true
+                   if (socialViewModel.attemptSubmit()) {
+                       showAlert = true
+                   }
                 },
                 setButtonText = "Zabeleži",
                 timePickerState = timePickerState,
                 onCancelButtonClicked = { socialViewModel.cancelForm() }
             )
         }
+        ShowUserErrorText(
+            errorPresent = showValidationError,
+            errorText = "Prosim izpolnite vsa polja"
+        )
     }
     if (showAlert) {
         CreateAlert(
             onDismissRequest = {
-                socialViewModel.clearForm()
                 showAlert = false
-                timePickerState.hour = 0
-                timePickerState.minute = 0
             },
             onConfirm = {
                 socialViewModel.submitForm()

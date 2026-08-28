@@ -5,15 +5,16 @@ import android.net.Uri
 import com.example.mhealthcat.forms.SignUpForm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SignUpViewModel: ViewModel() {
     private val _signUpForm = MutableStateFlow(SignUpForm())
     private val _showError = MutableStateFlow(false)
     private val _allowSubmit = MutableStateFlow(false)
 
-    val signUpForm: StateFlow<SignUpForm> = _signUpForm
-    val showError: StateFlow<Boolean> = _showError
-    val allowSubmit: StateFlow<Boolean> = _allowSubmit
+    val signUpForm: StateFlow<SignUpForm> = _signUpForm.asStateFlow()
+    val showError: StateFlow<Boolean> = _showError.asStateFlow()
+    val allowSubmit: StateFlow<Boolean> = _allowSubmit.asStateFlow()
 
     fun toggleShowErrorOn() {
         _showError.value = true
