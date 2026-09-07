@@ -6,17 +6,19 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,13 +49,14 @@ fun MenuBar() {
 
     var showUserMenu by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .weight(0.2f)
-        )
+                .size(70.dp))
         {
             CreateProfileImage(
                 modifier = Modifier
@@ -81,18 +84,12 @@ fun MenuBar() {
             )
         }
 
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(0.6f)
-        ) {
-        }
+
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .weight(0.2f)
-        ) {
+                .size(70.dp))
+        {
 
             CreateProfileImage(
                 modifier = Modifier.fillMaxSize()

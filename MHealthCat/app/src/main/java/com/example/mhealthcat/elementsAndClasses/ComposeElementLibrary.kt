@@ -4,11 +4,18 @@ import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -38,6 +45,7 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +85,11 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.time.Duration.Companion.seconds
 
 
 // COMPOSABLES
@@ -99,14 +112,17 @@ fun CreateProfileImage (
         if(imgUri != null){
             AsyncImage(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(5.dp),
                 model = imgUri,
                 contentScale = ContentScale.Crop,
                 contentDescription = description
             )
         } else if (imgRes != null) {
             Image(
-                modifier = Modifier.padding(5.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp),
                 painter = painterResource(id = imgRes),
                 contentDescription = description,
                 colorFilter = ColorFilter.tint(color)
@@ -227,7 +243,8 @@ fun CreateTimeDial (
 ) {
 
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
         TimeInput(
@@ -579,6 +596,61 @@ fun BackgroundAnimation (
             }
         }
     )
+}
+
+
+
+object FormSubmissionEvents {
+    private val _submitted = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    // SharedFlow so its app wide and can be observed from any composable
+    val submitted: SharedFlow<Unit> = _submitted.asSharedFlow()
+
+    fun notifySubmitted() {
+        _submitted.tryEmit(Unit)
+    }
+}
+
+
+@androidx.annotation.OptIn(UnstableApi::class)
+@Composable
+fun FormSuccessAnimationOverlay(
+    modifier: Modifier = Modifier,
+    @DrawableRes imageResId: Int = R.drawable.cat_notification
+) {
+    var visible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        FormSubmissionEvents.submitted.collect {
+            visible = true
+        }
+    }
+
+    LaunchedEffect(visible) {
+        if (visible) {
+            delay(5.seconds)
+            visible = false
+        }
+    }
+
+
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        AnimatedVisibility(
+            visible = visible,
+            enter = slideInHorizontally(initialOffsetX = { it }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { it }) + fadeOut(),
+            modifier = Modifier.padding(top = 16.dp, end = 16.dp)
+        ) {
+
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = "Form submission success",
+                modifier = Modifier.size(300.dp)
+            )
+        }
+    }
 }
 
 

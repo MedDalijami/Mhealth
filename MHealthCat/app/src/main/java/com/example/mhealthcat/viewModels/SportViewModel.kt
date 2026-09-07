@@ -2,6 +2,7 @@ package com.example.mhealthcat.viewModels
 
 
 import androidx.lifecycle.ViewModel
+import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
 import com.example.mhealthcat.forms.SportForm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,7 @@ class SportViewModel: ViewModel() {
     fun submitForm() {
         toggleShowFormOff()
         clearForm()
+        FormSubmissionEvents.notifySubmitted()
     }
 
     fun attemptSubmit(): Boolean {

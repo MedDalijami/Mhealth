@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.elementsAndClasses.AppScreen
+import com.example.mhealthcat.elementsAndClasses.FormSuccessAnimationOverlay
 import com.example.mhealthcat.screens.Data
 import com.example.mhealthcat.screens.Home
 import com.example.mhealthcat.screens.LogIn
@@ -33,56 +34,45 @@ fun Screen(modifier: Modifier = Modifier) {
     val navigationViewModel: NavigationViewModel = viewModel()
     val currentScreen by navigationViewModel.currentScreen
 
-
-
     Box(
         modifier = modifier
             .fillMaxSize()
-
-    )
-    Column {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.9f)
-                .padding(5.dp),
-            colors = CardDefaults.cardColors(Color.Transparent)
-        ) {
-            when (currentScreen) {
-                AppScreen.Home -> Home()
-
-                AppScreen.LogIn -> LogIn()
-
-                AppScreen.SignUp -> SignUp()
-
-                AppScreen.Sleep -> Sleep()
-
-                AppScreen.Social -> Social()
-
-                AppScreen.Sport -> Sports()
-
-                AppScreen.Wellbeing -> Wellbeing()
-
-                AppScreen.Data -> Data()
-
-                AppScreen.Settings -> Text("Settings")
-
-                AppScreen.User -> User()
-
+    ) {
+        Column {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.9f)
+                    .padding(5.dp),
+                colors = CardDefaults.cardColors(Color.Transparent)
+            ) {
+                when (currentScreen) {
+                    AppScreen.Home -> Home()
+                    AppScreen.LogIn -> LogIn()
+                    AppScreen.SignUp -> SignUp()
+                    AppScreen.Sleep -> Sleep()
+                    AppScreen.Social -> Social()
+                    AppScreen.Sport -> Sports()
+                    AppScreen.Wellbeing -> Wellbeing()
+                    AppScreen.Data -> Data()
+                    AppScreen.Settings -> Text("Settings")
+                    AppScreen.User -> User()
+                }
+            }
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.1f)
+                    .padding(7.dp),
+                colors = CardDefaults.cardColors(Color.Transparent)
+            ) {
+                // Menu is always visible apart from when user is on LogIn/ SignUp
+                if (currentScreen != AppScreen.LogIn && currentScreen != AppScreen.SignUp) {
+                    MenuBar()
+                }
             }
         }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(7.dp),
-            colors = CardDefaults.cardColors(Color.Transparent)
-        ) {
-            // Menu is always visible apart from when user is on LogIn/ SignUp
-            if (currentScreen != AppScreen.LogIn && currentScreen != AppScreen.SignUp) {
-                MenuBar()
-            }
 
-        }
+        FormSuccessAnimationOverlay()
     }
 }

@@ -2,6 +2,7 @@ package com.example.mhealthcat.viewModels
 
 import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
+import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
 import com.example.mhealthcat.forms.SocialForm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -85,6 +86,7 @@ class SocialViewModel: ViewModel() {
     fun submitForm() {
         toggleShowFormOff()
         clearForm()
+        FormSubmissionEvents.notifySubmitted()
     }
 
     fun cancelForm() {
