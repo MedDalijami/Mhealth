@@ -20,7 +20,7 @@ class SocialViewModel: ViewModel() {
 
     val showValidationError: StateFlow<Boolean> = _showValidationError.asStateFlow()
 
-    val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci, Sodelavci", "Drugo")
+    val peopleList = listOf("Prijatelji", "Partner/ka" ,"Družina", "Neznanci", "Sodelavci", "Drugo")
 
 
     fun toggleShowFormOn() {
