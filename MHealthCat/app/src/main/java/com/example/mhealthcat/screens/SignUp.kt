@@ -18,8 +18,11 @@ import androidx.compose.ui.unit.dp
 import android.net.Uri
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mhealthcat.elementsAndClasses.AppScreen
@@ -51,8 +54,10 @@ fun SignUp (){
 
     Column(
         modifier = Modifier
-            .padding(top = 60.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(top = 150.dp),
         verticalArrangement = Arrangement.spacedBy(1.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -65,7 +70,9 @@ fun SignUp (){
 
 
         Row(
-            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CreateOutlineButton(

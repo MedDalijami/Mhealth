@@ -8,12 +8,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -49,33 +54,44 @@ fun User() {
 
 
 
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
+            .fillMaxSize()
             .padding(top = 60.dp)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val viewportHeight = maxHeight
 
-        if (userViewModel.editingPassword.collectAsState().value) {
-            EditPassword(userViewModel)
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .fillMaxWidth()
+                .heightIn(min = viewportHeight),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        } else{
-            if (userViewModel.editingProfile.collectAsState().value) {
-                CreateUserInfo(
-                    userViewModel = userViewModel,
-                    navigationViewModel = navigationViewModel,
-                    editing = true
-                )
-            }
-            else {
-                CreateUserInfo(
-                    userViewModel = userViewModel,
-                    navigationViewModel = navigationViewModel,
-                )
+            if (userViewModel.editingPassword.collectAsState().value) {
+                EditPassword(userViewModel)
+
+            } else{
+                if (userViewModel.editingProfile.collectAsState().value) {
+                    CreateUserInfo(
+                        userViewModel = userViewModel,
+                        navigationViewModel = navigationViewModel,
+                        editing = true
+                    )
+                }
+                else {
+                    CreateUserInfo(
+                        userViewModel = userViewModel,
+                        navigationViewModel = navigationViewModel,
+                    )
+                }
+
             }
 
         }
-
     }
 
 
@@ -150,18 +166,20 @@ fun CreateUserInfo(
                 errorMsg = "Vnesen e-mail naslov ni veljaven",
                 enabled = editing
             )
-            Spacer(modifier = Modifier.weight(1f))
-            if (!editing)
-            CreateUserProfileButtonsView(
-                userViewModel = userViewModel,
-                navigationViewModel = navigationViewModel
-            ) else CreateUserProfileButtonsEditProfile(
-                userViewModel = userViewModel
-            )
         }
 
 
     }
+
+    if (!editing)
+        CreateUserProfileButtonsView(
+            userViewModel = userViewModel,
+            navigationViewModel = navigationViewModel
+        )
+    else
+        CreateUserProfileButtonsEditProfile(
+            userViewModel = userViewModel
+        )
 }
 
 @Composable
@@ -184,7 +202,7 @@ fun EditPassword(userViewModel: UserViewModel) {
             imgUri = userProfile.profilePictureUri,
             description = "Profile picture",
 
-        )
+            )
 
         Column(
             modifier = Modifier.padding(top = 20.dp),
@@ -226,15 +244,15 @@ fun EditPassword(userViewModel: UserViewModel) {
                 errorMsg = "Vnešeni gesli se ne ujemata",
                 isPassword = true
             )
-
-            Spacer(modifier = Modifier.weight(1f))
-            CreateUserProfileButtonsPassword(
-                userViewModel = userViewModel
-            )
         }
 
 
     }
+
+
+    CreateUserProfileButtonsPassword(
+        userViewModel = userViewModel
+    )
 
 }
 
@@ -244,43 +262,46 @@ fun CreateUserProfileButtonsView (
     userViewModel: UserViewModel,
     navigationViewModel: NavigationViewModel
 ) {
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        CreateOutlineButton(
-            modifier = Modifier.weight(1f),
-            onClick = { userViewModel.toggleEditingProfileOn()},
-            buttonText = "Uredi profil",
-            fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary)
-        )
+    Column {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = { userViewModel.toggleEditingProfileOn() },
+                buttonText = "Uredi profil",
+                fontSize = 18.sp,
+                border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary)
+            )
 
-        Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
+            CreateOutlineButton(
+                modifier = Modifier.weight(1f),
+                onClick = { userViewModel.toggleEditingPasswordOn() },
+                buttonText = "Spremeni geslo",
+                fontSize = 18.sp,
+                border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary)
+            )
+        }
         CreateOutlineButton(
-            modifier = Modifier.weight(1f),
-            onClick = { userViewModel.toggleEditingPasswordOn() },
-            buttonText = "Spremeni geslo",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 10.dp),
+            onClick = {
+                userViewModel.clearUserProfile()
+                navigationViewModel.isLoggedIn(false)
+                navigationViewModel.changeToScreen(AppScreen.LogIn)
+            },
+            buttonText = "Izpis iz profila",
             fontSize = 18.sp,
-            border = BorderStroke(width = 3.dp, color = MaterialTheme.colorScheme.primary)
+            border = BorderStroke(width = 3.dp, color = RetroRed)
         )
     }
-    CreateOutlineButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding( start = 20.dp, end = 20.dp, top = 10.dp),
-        onClick = {
-            userViewModel.clearUserProfile()
-            navigationViewModel.isLoggedIn(false)
-            navigationViewModel.changeToScreen(AppScreen.LogIn)
-        },
-        buttonText = "Izpis iz profila",
-        fontSize = 18.sp,
-        border = BorderStroke(width = 3.dp, color = RetroRed)
-    )
 }
 
 

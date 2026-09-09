@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -41,7 +44,11 @@ fun LogIn () {
     val allowSubmit by logInViewModel.allowSubmit.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(top = 150.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,18 +56,23 @@ fun LogIn () {
             modifier = Modifier
                 .size(160.dp)
                 .aspectRatio(1f),
+
             color = Color.White,
             imgRes = R.drawable.user_menu,
             description = "Profile picture"
         )
 
-        Column {
+        Column(
+            modifier = Modifier.padding(top = 20.dp).fillMaxWidth(),
+        )
+        {
 
             CreateLoginForm(logInViewModel)
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
