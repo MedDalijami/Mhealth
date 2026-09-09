@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
@@ -51,12 +51,14 @@ fun MenuBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .padding(10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
             modifier = Modifier
-                .size(70.dp))
+                .size(80.dp)
+        )
         {
             CreateProfileImage(
                 modifier = Modifier
@@ -88,7 +90,8 @@ fun MenuBar() {
 
         Box(
             modifier = Modifier
-                .size(70.dp))
+                .size(80.dp)
+        )
         {
 
             CreateProfileImage(
@@ -103,7 +106,7 @@ fun MenuBar() {
             val userMenuList = listOf(
                 Triple("Uporabnik", "\uD83D\uDC64", AppScreen.User),
                 Triple("Pregled vnosov","\uD83D\uDCC8", AppScreen.Data),
-                Triple("Nastavitve", "⚙\uFE0F", AppScreen.Settings)
+                //Triple("Nastavitve", "⚙\uFE0F", AppScreen.Settings)
             )
 
             CreateBottomMenu(

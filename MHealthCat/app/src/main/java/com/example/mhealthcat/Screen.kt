@@ -2,9 +2,12 @@ package com.example.mhealthcat
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,7 +45,7 @@ fun Screen(modifier: Modifier = Modifier) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.9f)
+                    .weight(1f)
                     .padding(5.dp),
                 colors = CardDefaults.cardColors(Color.Transparent)
             ) {
@@ -62,7 +65,7 @@ fun Screen(modifier: Modifier = Modifier) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.1f)
+                    .height(100.dp)
                     .padding(7.dp),
                 colors = CardDefaults.cardColors(Color.Transparent)
             ) {
