@@ -6,13 +6,15 @@ import com.example.mhealthcat.data.forms.SportForm
 import com.example.mhealthcat.data.forms.WellbeingForm
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.UUID
+
 object TestData {
 
 
-    val sleepData = rawSleepData.mapIndexed { index, item -> item.copy(id = "sleep-$index") }
-    val socialData = rawSocialData.mapIndexed { index, item -> item.copy(id = "social-$index") }
-    val sportData = rawSportData.mapIndexed { index, item -> item.copy(id = "sport-$index") }
-    val wellbeingData = rawWellbeingData.mapIndexed { index, item -> item.copy(id = "wellbeing-$index") }
+    val sleepData = rawSleepData.mapIndexed { index, item -> item.copy(id = UUID.randomUUID().toString()) }
+    val socialData = rawSocialData.mapIndexed { index, item -> item.copy(id = UUID.randomUUID().toString()) }
+    val sportData = rawSportData.mapIndexed { index, item -> item.copy(id = UUID.randomUUID().toString()) }
+    val wellbeingData = rawWellbeingData.mapIndexed { index, item -> item.copy(id = UUID.randomUUID().toString()) }
 }
 
 private val rawSleepData = listOf(

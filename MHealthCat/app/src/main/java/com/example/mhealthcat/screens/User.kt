@@ -19,8 +19,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,6 +45,7 @@ import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.elementsAndClasses.CreateTextField
 import com.example.mhealthcat.elementsAndClasses.ProfileImage
 import com.example.mhealthcat.R
+import com.example.mhealthcat.elementsAndClasses.CreateFilledButton
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.RetroRed
 import com.example.mhealthcat.viewModels.NavigationViewModel
@@ -262,6 +266,9 @@ fun CreateUserProfileButtonsView (
     userViewModel: UserViewModel,
     navigationViewModel: NavigationViewModel
 ) {
+
+    var showDeleteAlert by remember { mutableStateOf(false) }
+
     Column {
         Row(
             modifier = Modifier
@@ -270,6 +277,8 @@ fun CreateUserProfileButtonsView (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
+
+
             CreateOutlineButton(
                 modifier = Modifier.weight(1f),
                 onClick = { userViewModel.toggleEditingProfileOn() },
@@ -301,7 +310,80 @@ fun CreateUserProfileButtonsView (
             fontSize = 18.sp,
             border = BorderStroke(width = 3.dp, color = RetroRed)
         )
+        CreateFilledButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 10.dp),
+            onClick = {
+                showDeleteAlert = true
+            },
+            buttonText = "Izbriši uporabnika",
+            fontSize = 18.sp,
+            containerColor = RetroRed
+        )
     }
+    if (showDeleteAlert) {
+        val deleteAccountPassword by userViewModel.deleteAccountPassword.collectAsState()
+        var showDeleteError by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteAlert = false
+                userViewModel.clearDeleteAccountPassword()
+            },
+            title = {
+                Text("Želite izbrisati svoj profil?")
+            },
+            text = {
+                Column {
+                    Text("Tega dejanja ni mogoče razveljaviti. Za potrditev vnesite svoje geslo.")
+                    CreateTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        textFieldValue = deleteAccountPassword,
+                        onValueChange = {
+                            userViewModel.updateDeleteAccountPassword(it)
+                            showDeleteError = false
+                                        },
+                        placeholder = "Vaše geslo",
+                        isValid = !showDeleteError,
+                        errorMsg = "Vpisano geslo ni pravilno",
+                        isPassword = true
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        if (userViewModel.isDeleteAccountPasswordCorrect()) {
+                            userViewModel.deleteUserProfile()
+                            navigationViewModel.isLoggedIn(false)
+                            navigationViewModel.changeToScreen(AppScreen.LogIn)
+                            showDeleteAlert = false
+                        }
+                        else{
+                            showDeleteError = true
+                        }
+                    },
+                ) {
+                    Text("Potrdi")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteAlert = false
+                        userViewModel.clearDeleteAccountPassword()
+                    }
+                ) {
+                    Text("Prekliči")
+                }
+            }
+        )
+
+    }
+
 }
 
 

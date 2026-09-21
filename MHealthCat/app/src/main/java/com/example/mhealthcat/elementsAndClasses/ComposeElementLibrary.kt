@@ -1,6 +1,7 @@
 package com.example.mhealthcat.elementsAndClasses
 
 import android.net.Uri
+import android.widget.Button
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +28,8 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -131,6 +134,31 @@ fun CreateProfileImage (
     }
 }
 
+
+@Composable
+fun CreateFilledButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    containerColor: Color = RetroPixelBorder,
+    buttonText: String,
+    fontFamily: FontFamily = roboto,
+    fontSize: TextUnit = 20.sp,
+    enabled: Boolean = true
+){
+    Button(
+        modifier = modifier,
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = containerColor),
+        enabled = enabled
+    ) {
+        Text(
+            text = buttonText,
+            fontSize = fontSize,
+            fontFamily = fontFamily,
+            color = Color.White
+        )
+    }
+}
 @Composable
 fun CreateOutlineButton(
     modifier: Modifier = Modifier,

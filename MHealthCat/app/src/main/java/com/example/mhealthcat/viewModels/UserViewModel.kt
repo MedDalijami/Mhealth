@@ -24,6 +24,9 @@ class UserViewModel : ViewModel() {
     private var _storedPassword = "testni123"
     private val _currentPasswordInput = MutableStateFlow<String>("")
 
+    private val _deleteAccountPassword = MutableStateFlow("")
+
+
     private val _editingProfile = MutableStateFlow(false)
     private val _editingPassword = MutableStateFlow(false)
 
@@ -42,6 +45,7 @@ class UserViewModel : ViewModel() {
     val allowEditPasswordSubmit: StateFlow<Boolean> = _allowEditPasswordSubmit
 
     val newPassword: StateFlow<String> = _newPassword
+    val deleteAccountPassword: StateFlow<String> = _deleteAccountPassword
 
     val newPasswordRepeat: StateFlow<String> = _newPasswordRepeat
 
@@ -118,6 +122,18 @@ class UserViewModel : ViewModel() {
         _userProfile.value = UserProfile()
     }
 
+    fun updateDeleteAccountPassword(password: String) {
+        _deleteAccountPassword.value = password
+    }
+
+    fun clearDeleteAccountPassword() {
+        _deleteAccountPassword.value = ""
+    }
+
+    fun isDeleteAccountPasswordCorrect(): Boolean {
+        return _deleteAccountPassword.value == _storedPassword
+    }
+
     fun saveUserProfile() {
         _userProfileActual.value = _userProfileActual.value.copy(
             name = _userProfile.value.name,
@@ -153,6 +169,16 @@ class UserViewModel : ViewModel() {
 
     fun toggleAllowEditPasswordSubmit() {
         _allowEditPasswordSubmit.value = isValidPassword() && isValidNewPassword() && isValidPasswordRepeat()
+    }
+
+    fun deleteUserProfile() {
+        _userProfileActual.value = UserProfile()
+        _userProfile.value = UserProfile()
+        _storedPassword = ""
+        clearDeleteAccountPassword()
+        clearPasswords()
+        _editingProfile.value = false
+        _editingPassword.value = false
     }
 
 }
