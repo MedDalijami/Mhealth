@@ -3,12 +3,14 @@ package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
-import com.example.mhealthcat.forms.WellbeingForm
+import com.example.mhealthcat.data.forms.WellbeingForm
+import com.example.mhealthcat.data.repositories.MhealthDataRepositories
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class WellbeingViewModel: ViewModel() {
+    private val repository = MhealthDataRepositories.wellbeingRepository
     private val _wellbeingForm = MutableStateFlow(WellbeingForm())
     private val _showForm = MutableStateFlow(false)
     private val _showValidationError = MutableStateFlow(false)
@@ -53,6 +55,7 @@ class WellbeingViewModel: ViewModel() {
     }
 
     fun submitForm() {
+        repository.add(_wellbeingForm.value)
         toggleShowFormOff()
         clearForm()
         FormSubmissionEvents.notifySubmitted()

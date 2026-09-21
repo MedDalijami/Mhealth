@@ -1,4 +1,4 @@
-package com.example.mhealthcat.forms
+package com.example.mhealthcat.data.forms
 
 data class LogInForm(
     val email:  String = "",

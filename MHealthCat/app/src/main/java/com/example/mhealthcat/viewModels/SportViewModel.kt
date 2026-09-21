@@ -3,12 +3,14 @@ package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
-import com.example.mhealthcat.forms.SportForm
+import com.example.mhealthcat.data.forms.SportForm
+import com.example.mhealthcat.data.repositories.MhealthDataRepositories
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SportViewModel: ViewModel() {
+    private val _repository = MhealthDataRepositories.sportRepository
     private val _sportForm = MutableStateFlow(SportForm())
     private val _showForm = MutableStateFlow(false)
 
@@ -53,6 +55,7 @@ class SportViewModel: ViewModel() {
     }
 
     fun submitForm() {
+        _repository.add(_sportForm.value)
         toggleShowFormOff()
         clearForm()
         FormSubmissionEvents.notifySubmitted()

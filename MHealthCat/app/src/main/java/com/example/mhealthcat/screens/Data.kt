@@ -46,10 +46,10 @@ import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.mhealthcat.elementsAndClasses.DataType
-import com.example.mhealthcat.forms.SleepForm
-import com.example.mhealthcat.forms.SocialForm
-import com.example.mhealthcat.forms.SportForm
-import com.example.mhealthcat.forms.WellbeingForm
+import com.example.mhealthcat.data.forms.SleepForm
+import com.example.mhealthcat.data.forms.SocialForm
+import com.example.mhealthcat.data.forms.SportForm
+import com.example.mhealthcat.data.forms.WellbeingForm
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.R
@@ -324,7 +324,7 @@ fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDispl
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                dataDisplayViewModel.formatTimestamp(item.createdAt),
+                dataDisplayViewModel.formatTimestamp(item.timestamp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -368,7 +368,7 @@ fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewMo
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                dataDisplayViewModel.formatTimestamp(item.createdAt),
+                dataDisplayViewModel.formatTimestamp(item.timestamp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -475,7 +475,7 @@ fun CreateSocialListItem(
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                dataDisplayViewModel.formatTimestamp(item.createdAt),
+                dataDisplayViewModel.formatTimestamp(item.timestamp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -544,7 +544,7 @@ fun CreateSleepListItem(
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                dataDisplayViewModel.formatTimestamp(item.createdAt),
+                dataDisplayViewModel.formatTimestamp(item.timestamp),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

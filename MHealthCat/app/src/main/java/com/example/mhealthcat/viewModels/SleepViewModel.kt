@@ -2,12 +2,14 @@ package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
-import com.example.mhealthcat.forms.SleepForm
+import com.example.mhealthcat.data.forms.SleepForm
+import com.example.mhealthcat.data.repositories.MhealthDataRepositories
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SleepViewModel : ViewModel() {
+    private val _repository = MhealthDataRepositories.sleepRepository
     private val _sleepForm = MutableStateFlow(SleepForm())
     private val _showForm = MutableStateFlow(false)
     private val _showValidationError = MutableStateFlow(false)
@@ -53,6 +55,7 @@ class SleepViewModel : ViewModel() {
     }
 
     fun submitForm() {
+        _repository.add(_sleepForm.value)
         toggleShowFormOff()
         clearForm()
         FormSubmissionEvents.notifySubmitted()

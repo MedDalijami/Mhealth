@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import co.yml.charts.common.model.PlotType
 import co.yml.charts.ui.piechart.models.PieChartData
 import com.example.mhealthcat.elementsAndClasses.DataType
-import com.example.mhealthcat.forms.SleepForm
-import com.example.mhealthcat.forms.SocialForm
-import com.example.mhealthcat.forms.SportForm
-import com.example.mhealthcat.forms.WellbeingForm
+import com.example.mhealthcat.data.forms.SleepForm
+import com.example.mhealthcat.data.forms.SocialForm
+import com.example.mhealthcat.data.forms.SportForm
+import com.example.mhealthcat.data.forms.WellbeingForm
+import com.example.mhealthcat.data.repositories.MhealthDataRepositories
 import com.example.mhealthcat.testData.TestData
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
@@ -22,10 +23,11 @@ import java.util.Locale
 
 
 class DataDisplayViewModel : ViewModel() {
-    private val _listOfSleepData = MutableStateFlow(TestData.sleepData.sortedByDescending { it.createdAt })
-    private val _listOfSocialData = MutableStateFlow(TestData.socialData.sortedByDescending { it.createdAt })
-    private val _listOfSportData = MutableStateFlow(TestData.sportData.sortedByDescending { it.createdAt })
-    private val _listOfWellbeingData = MutableStateFlow(TestData.wellbeingData.sortedByDescending { it.createdAt })
+
+    private val sleepRepository = MhealthDataRepositories.sleepRepository
+    private val socialRepository = MhealthDataRepositories.socialRepository
+    private val sportRepository = MhealthDataRepositories.sportRepository
+    private val wellbeingRepository = MhealthDataRepositories.wellbeingRepository
 
     private val _selectedDataType = MutableStateFlow(DataType.SLEEP)
 
@@ -33,10 +35,10 @@ class DataDisplayViewModel : ViewModel() {
     private val _graphView = MutableStateFlow(true)
 
 
-    val listOfSleepData: StateFlow<List<SleepForm>> = _listOfSleepData
-    val listOfSocialData: MutableStateFlow<List<SocialForm>> = _listOfSocialData
-    val listOfSportData: MutableStateFlow<List<SportForm>> = _listOfSportData
-    val listOfWellbeingData: MutableStateFlow<List<WellbeingForm>> = _listOfWellbeingData
+    val listOfSleepData: StateFlow<List<SleepForm>> = sleepRepository.items
+    val listOfSocialData: StateFlow<List<SocialForm>> = socialRepository.items
+    val listOfSportData: StateFlow<List<SportForm>> = sportRepository.items
+    val listOfWellbeingData: StateFlow<List<WellbeingForm>> = wellbeingRepository.items
 
     val graphView: MutableStateFlow<Boolean> = _graphView
 
@@ -75,16 +77,16 @@ class DataDisplayViewModel : ViewModel() {
     }
 
     fun returnSleepRatings(): Map<Int, Int> =
-        _listOfSleepData.value.groupingBy { it.rating }.eachCount()
+        sleepRepository.items.value.groupingBy { it.rating }.eachCount()
 
     fun returnSocialRatings(): Map<Int, Int> =
-        _listOfSocialData.value.groupingBy { it.rating }.eachCount()
+        socialRepository.items.value.groupingBy { it.rating }.eachCount()
 
     fun returnSportRatings(): Map<Int, Int> =
-        _listOfSportData.value.groupingBy { it.rating }.eachCount()
+        sportRepository.items.value.groupingBy { it.rating }.eachCount()
 
     fun returnWellbeingRatings(): Map<Int, Int> =
-        _listOfWellbeingData.value.groupingBy { it.rating }.eachCount()
+        wellbeingRepository.items.value.groupingBy { it.rating }.eachCount()
 
     private fun buildChartData(data: Map<Int, Int>): PieChartData = PieChartData(
         slices = (1..5).map { rating ->
@@ -102,16 +104,16 @@ class DataDisplayViewModel : ViewModel() {
     fun returnWellbeingChartData() = buildChartData(returnWellbeingRatings())
 
     fun removeSleepItem(item: SleepForm) {
-        _listOfSleepData.value -= item
+        sleepRepository.remove(item.id)
     }
     fun removeSocialItem(item: SocialForm) {
-        _listOfSocialData.value -= item
+        socialRepository.remove(item.id)
     }
     fun removeSportItem(item: SportForm) {
-        _listOfSportData.value -= item
+        sportRepository.remove(item.id)
     }
     fun removeWellbeingItem(item: WellbeingForm) {
-        _listOfWellbeingData.value -= item
+        wellbeingRepository.remove(item.id)
     }
 
 }

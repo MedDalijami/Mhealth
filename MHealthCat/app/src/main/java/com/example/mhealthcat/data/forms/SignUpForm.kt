@@ -1,4 +1,4 @@
-package com.example.mhealthcat.forms
+package com.example.mhealthcat.data.forms
 
 import android.net.Uri
 

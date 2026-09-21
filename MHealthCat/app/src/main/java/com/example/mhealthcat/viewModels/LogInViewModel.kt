@@ -1,7 +1,7 @@
 package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
-import com.example.mhealthcat.forms.LogInForm
+import com.example.mhealthcat.data.forms.LogInForm
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

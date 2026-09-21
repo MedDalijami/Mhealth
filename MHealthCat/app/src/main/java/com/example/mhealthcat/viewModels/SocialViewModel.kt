@@ -1,14 +1,15 @@
 package com.example.mhealthcat.viewModels
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import com.example.mhealthcat.elementsAndClasses.FormSubmissionEvents
-import com.example.mhealthcat.forms.SocialForm
+import com.example.mhealthcat.data.forms.SocialForm
+import com.example.mhealthcat.data.repositories.MhealthDataRepositories
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class SocialViewModel: ViewModel() {
+    private val _repository = MhealthDataRepositories.socialRepository
     private val _socialForm = MutableStateFlow(SocialForm())
     private val _showForm = MutableStateFlow(false)
 
@@ -84,6 +85,7 @@ class SocialViewModel: ViewModel() {
     }
 
     fun submitForm() {
+        _repository.add(_socialForm.value)
         toggleShowFormOff()
         clearForm()
         FormSubmissionEvents.notifySubmitted()
