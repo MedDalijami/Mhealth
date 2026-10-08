@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019522792465",
+    "project_id": "zdravmuc",
+    "storage_bucket": "zdravmuc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019522792465:android:61bd9d5f24e83804ddc5b0",
+        "android_client_info": {
+          "package_name": "com.example.mhealthcat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk0bMqAXdJZdFwPXZA-QNnuJyL5PKBiHU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
