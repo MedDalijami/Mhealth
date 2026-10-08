@@ -7,8 +7,8 @@ plugins {
 android {
     namespace = "com.example.mhealthcat"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 2
         }
     }
 
@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.androidx.media3.ui)
 
     //Firebase
-    implementation(platform(libs.firebase.bom.v3500))
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
