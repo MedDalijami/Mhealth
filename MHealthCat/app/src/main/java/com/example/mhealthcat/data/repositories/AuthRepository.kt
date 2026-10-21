@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
@@ -18,10 +19,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
+// Single place that talks to Firebase Authentication and the users/{uid} profile document
 object AuthRepository {
-    private val auth = FirebaseAuth.getInstance()
+    private val auth get() = FirebaseAuth.getInstance()
     private val firestore get() = FirebaseFirestore.getInstance()
 
+    // Currently logged-in user, null when logged out. Updates on login, logout and account deletion.
     private val _currentUser = MutableStateFlow(auth.currentUser)
     val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
 
@@ -38,24 +41,33 @@ object AuthRepository {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
-    suspend fun signUp(name: String, lastName: String, email: String, password: String) {
+    suspend fun signUp(
+        name: String,
+        lastName: String,
+        email: String,
+        password: String,
+        profilePicture: String? = null
+    ) {
         val user = auth.createUserWithEmailAndPassword(email, password).await().user
             ?: throw IllegalStateException("Registracija ni uspela")
 
-        userDocument(user.uid).set(
-            mapOf(
-                "name" to name,
-                "lastName" to lastName,
-                "email" to email,
-                "createdAt" to System.currentTimeMillis()
-            )
-        ).await()
+        val profile = mutableMapOf<String, Any>(
+            "name" to name,
+            "lastName" to lastName,
+            "email" to email,
+            "createdAt" to System.currentTimeMillis()
+        )
+        if (profilePicture != null) {
+            profile["profilePicture"] = profilePicture
+        }
+        userDocument(user.uid).set(profile).await()
     }
 
     fun logOut() {
         auth.signOut()
     }
 
+    // Live profile of the given user; emits again whenever the document changes
     fun profile(user: FirebaseUser): Flow<UserProfile> = callbackFlow {
         val registration = userDocument(user.uid).addSnapshotListener { document, _ ->
             trySend(
@@ -64,7 +76,8 @@ object AuthRepository {
                     email = document?.getString("email") ?: user.email.orEmpty(),
                     name = document?.getString("name").orEmpty(),
                     lastName = document?.getString("lastName").orEmpty(),
-                    createdAt = document?.getLong("createdAt") ?: 0L
+                    createdAt = document?.getLong("createdAt") ?: 0L,
+                    profilePictureData = document?.getString("profilePicture")
                 )
             )
         }
@@ -78,19 +91,27 @@ object AuthRepository {
             .await()
     }
 
+    // Saves a new thumbnail, or removes the field when picture is null
+    suspend fun updateProfilePicture(picture: String?) {
+        val user = auth.currentUser ?: return
+        userDocument(user.uid)
+            .set(mapOf("profilePicture" to (picture ?: FieldValue.delete())), SetOptions.merge())
+            .await()
+    }
+
     suspend fun changePassword(currentPassword: String, newPassword: String) {
         val user = reauthenticate(currentPassword)
         user.updatePassword(newPassword).await()
     }
+
     suspend fun deleteAccount(password: String) {
         val user = reauthenticate(password)
         // TODO: once entries are stored in Firestore, delete users/{uid}/sleep, sport, social
         //  and wellbeing here as well. Firestore does not delete subcollections on its own.
+        // The profile picture is a field of this document, so it is deleted together with it.
         userDocument(user.uid).delete().await()
         user.delete().await()
     }
-
-    // Firebase requires a recent login before changing the password or deleting the account
     private suspend fun reauthenticate(password: String): FirebaseUser {
         val user = auth.currentUser ?: throw IllegalStateException("Uporabnik ni prijavljen")
         val credential = EmailAuthProvider.getCredential(user.email.orEmpty(), password)
@@ -103,8 +124,8 @@ object AuthRepository {
         wrongCredentialsText: String = "Vnesen e-mail ali geslo nista pravilna."
     ): String = when (e) {
         is FirebaseAuthUserCollisionException -> "E-poštni naslov je že registriran."
-        is FirebaseAuthInvalidUserException -> wrongCredentialsText
-        is FirebaseAuthInvalidCredentialsException -> "Vnesen e-mail ali geslo nista pravilna."
+        is FirebaseAuthInvalidUserException,
+        is FirebaseAuthInvalidCredentialsException -> wrongCredentialsText
         is FirebaseNetworkException -> "Ni internetne povezave. Poskusite znova."
         else -> "Prišlo je do napake. Poskusite znova."
     }

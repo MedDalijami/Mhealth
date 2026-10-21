@@ -80,7 +80,6 @@ fun SignUp (){
             CreateOutlineButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    // Firebase logs the new user in right away, so go straight to Home
                     signUpViewModel.signUp {
                         navigationViewModel.isLoggedIn(true)
                         navigationViewModel.changeToScreen(AppScreen.Home)

@@ -9,5 +9,6 @@ data class UserProfile(
     val name: String = "",
     val lastName: String = "",
     val profilePictureUri: Uri? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val profilePictureData: String? = null
 )

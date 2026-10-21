@@ -1,16 +1,19 @@
 package com.example.mhealthcat.viewModels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.example.mhealthcat.data.forms.SignUpForm
 import com.example.mhealthcat.data.repositories.AuthRepository
+import com.example.mhealthcat.data.repositories.ProfilePictureStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SignUpViewModel: ViewModel() {
+// AndroidViewModel gives access to the app context, which is needed to read the picked picture
+class SignUpViewModel(application: Application) : AndroidViewModel(application) {
     private val _signUpForm = MutableStateFlow(SignUpForm())
     private val _showError = MutableStateFlow(false)
     private val _errorText = MutableStateFlow("")
@@ -93,12 +96,23 @@ class SignUpViewModel: ViewModel() {
         _signUpForm.value = _signUpForm.value.copy(profilePictureUri = uri)
     }
 
+    // Creates the account in Firebase; the user is logged in afterwards, so onSuccess can go to Home
     fun signUp(onSuccess: () -> Unit) {
         val form = _signUpForm.value
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                AuthRepository.signUp(form.name.trim(), form.lastName.trim(), form.email.trim(), form.password)
+                // A picture that can't be read shouldn't block the sign-up, so it is simply left out
+                val picture = form.profilePictureUri?.let { uri ->
+                    runCatching { ProfilePictureStore.encode(getApplication(), uri) }.getOrNull()
+                }
+                AuthRepository.signUp(
+                    form.name.trim(),
+                    form.lastName.trim(),
+                    form.email.trim(),
+                    form.password,
+                    picture
+                )
                 toggleShowErrorOff()
                 clearForm()
                 onSuccess()
@@ -115,5 +129,6 @@ class SignUpViewModel: ViewModel() {
         _signUpForm.value = SignUpForm()
         toggleAllowSubmitOff()
     }
+
 
 }

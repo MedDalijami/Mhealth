@@ -1,10 +1,12 @@
 package com.example.mhealthcat.viewModels
 
 
+import android.app.Application
 import android.net.Uri
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mhealthcat.data.repositories.AuthRepository
+import com.example.mhealthcat.data.repositories.ProfilePictureStore
 import com.example.mhealthcat.models.UserProfile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+
+// AndroidViewModel gives access to the app context, which is needed to read and cache pictures
 @OptIn(ExperimentalCoroutinesApi::class)
-class UserViewModel : ViewModel() {
+class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     // The actual data of logged-in user, loaded from Firestore (users/{uid})
     private val _userProfileActual = MutableStateFlow(UserProfile())
@@ -54,7 +58,6 @@ class UserViewModel : ViewModel() {
     val isLoading: StateFlow<Boolean> = _isLoading
 
 
-    // Follow whoever is logged in: load their profile, clear it on logout
     init {
         viewModelScope.launch {
             AuthRepository.currentUser
@@ -62,9 +65,12 @@ class UserViewModel : ViewModel() {
                     if (user == null) flowOf(UserProfile()) else AuthRepository.profile(user)
                 }
                 .collect { profile ->
-                    // The profile picture is not stored in Firebase yet, keep the one picked on this device
-                    val pictureUri = _userProfileActual.value.profilePictureUri
-                        .takeIf { _userProfileActual.value.id == profile.id }
+                    // Turn the stored thumbnail into a Uri the image composables can show
+                    val pictureUri = profile.profilePictureData?.let { data ->
+                        runCatching {
+                            ProfilePictureStore.toCachedUri(getApplication(), profile.id, data)
+                        }.getOrNull()
+                    }
                     _userProfileActual.value = profile.copy(profilePictureUri = pictureUri)
                     if (!_editingProfile.value) {
                         _userProfile.value = _userProfileActual.value
@@ -156,8 +162,10 @@ class UserViewModel : ViewModel() {
         _deleteAccountPassword.value = ""
     }
 
-    // Name and last name are saved to Firestore; e-mail changes are not supported yet
     fun saveUserProfile() {
+        val newPictureUri = _userProfile.value.profilePictureUri
+            .takeIf { it != _userProfileActual.value.profilePictureUri }
+
         _userProfileActual.value = _userProfileActual.value.copy(
             name = _userProfile.value.name,
             lastName = _userProfile.value.lastName,
@@ -167,6 +175,9 @@ class UserViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 AuthRepository.updateProfile(_userProfileActual.value.name, _userProfileActual.value.lastName)
+                if (newPictureUri != null) {
+                    AuthRepository.updateProfilePicture(ProfilePictureStore.encode(getApplication(), newPictureUri))
+                }
             } catch (e: Exception) {
                 println("Shranjevanje profila ni uspelo: ${e.message}")
             }
@@ -192,7 +203,6 @@ class UserViewModel : ViewModel() {
         _allowEditPasswordSubmit.value = isValidPassword() && isValidNewPassword() && isValidPasswordRepeat()
     }
 
-    // Firebase checks the current password; closes the form on success, shows an error otherwise
     fun changePassword() {
         viewModelScope.launch {
             _isLoading.value = true

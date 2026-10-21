@@ -500,7 +500,6 @@ fun CreateUserProfileButtonsPassword (
                 showAlert = false
             },
             onConfirm = {
-                // Firebase checks the current password; the form closes only if the change succeeds
                 showAlert = false
                 userViewModel.changePassword()
             }
