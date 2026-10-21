@@ -42,6 +42,8 @@ fun LogIn () {
 
     val showError by logInViewModel.showError.collectAsState()
     val allowSubmit by logInViewModel.allowSubmit.collectAsState()
+    val isLoading by logInViewModel.isLoading.collectAsState()
+    val errorText by logInViewModel.errorText.collectAsState()
 
     Column(
         modifier = Modifier
@@ -82,13 +84,13 @@ fun LogIn () {
                 CreateOutlineButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        if (logInViewModel.logIn()){
+                        logInViewModel.logIn {
                             navigationViewModel.isLoggedIn(true)
                             navigationViewModel.changeToScreen(AppScreen.Home)
                         }
                     },
                     buttonText = "Vpiši se",
-                    enabled = allowSubmit
+                    enabled = allowSubmit && !isLoading
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
@@ -98,12 +100,12 @@ fun LogIn () {
                     onClick = { navigationViewModel.changeToScreen(AppScreen.SignUp) },
                     buttonText = "Registriraj se",
 
-                )
+                    )
             }
 
             ShowUserErrorText(errorPresent = showError,
-                errorText = "Vnesen e-mail ali geslo nista pravilna."
-                )
+                errorText = errorText
+            )
         }
     }
 

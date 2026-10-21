@@ -1,23 +1,30 @@
 package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mhealthcat.data.forms.LogInForm
+import com.example.mhealthcat.data.repositories.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class LogInViewModel : ViewModel(){
     private val _showError = MutableStateFlow(false)
+    private val _errorText = MutableStateFlow("")
     private val _logInForm = MutableStateFlow(LogInForm())
 
     private val _allowSubmit = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(false)
 
 
 
     val showError: StateFlow<Boolean> = _showError.asStateFlow()
+    val errorText: StateFlow<String> = _errorText.asStateFlow()
     val logInForm: StateFlow<LogInForm> = _logInForm.asStateFlow()
 
     val allowSubmit: StateFlow<Boolean> = _allowSubmit.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
 
     fun toggleShowErrorOn() {
@@ -63,27 +70,25 @@ class LogInViewModel : ViewModel(){
         }
     }
 
-    private fun validateForm(): Boolean {
-        val form = _logInForm.value
-        return form.email == "testni@uporabnik.si" && form.password == "testni123"
-
-    }
-
     private fun clearForm() {
         _logInForm.value = LogInForm()
+        toggleAllowSubmitOff()
     }
-
-    fun logIn(): Boolean {
-        return if (validateForm()) {
-            println("Uspešna prijava.")
-            toggleShowErrorOff()
-            clearForm()
-            true
-
-        } else {
-            println("Neuspešna prijava.")
-            toggleShowErrorOn()
-            false
+    fun logIn(onSuccess: () -> Unit) {
+        val form = _logInForm.value
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                AuthRepository.logIn(form.email.trim(), form.password)
+                toggleShowErrorOff()
+                clearForm()
+                onSuccess()
+            } catch (e: Exception) {
+                _errorText.value = AuthRepository.errorMessage(e)
+                toggleShowErrorOn()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

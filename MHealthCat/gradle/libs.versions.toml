@@ -15,6 +15,7 @@ composeBom = "2026.09.00"
 media3Exoplayer = "1.11.1"
 media3Ui = "1.11.1"
 ycharts = "2.1.0"
+firebaseAuthKtx = "25.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

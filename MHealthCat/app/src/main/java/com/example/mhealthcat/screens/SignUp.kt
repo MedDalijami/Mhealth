@@ -49,6 +49,8 @@ fun SignUp (){
 
     val showError by signUpViewModel.showError.collectAsState()
     val allowSubmit by signUpViewModel.allowSubmit.collectAsState()
+    val isLoading by signUpViewModel.isLoading.collectAsState()
+    val errorText by signUpViewModel.errorText.collectAsState()
 
 
 
@@ -78,12 +80,14 @@ fun SignUp (){
             CreateOutlineButton(
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    if (signUpViewModel.signUp()) {
-                        navigationViewModel.changeToScreen(AppScreen.LogIn)
+                    // Firebase logs the new user in right away, so go straight to Home
+                    signUpViewModel.signUp {
+                        navigationViewModel.isLoggedIn(true)
+                        navigationViewModel.changeToScreen(AppScreen.Home)
                     }
                 },
                 buttonText = "Registriraj se",
-                enabled = allowSubmit
+                enabled = allowSubmit && !isLoading
             )
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -96,9 +100,9 @@ fun SignUp (){
         }
 
 
-    ShowUserErrorText(
-        errorPresent = showError,
-        errorText = "Prišlo je do napake ob registraciji, e-poštni naslov je že registriran")
+        ShowUserErrorText(
+            errorPresent = showError,
+            errorText = errorText)
     }
 
 

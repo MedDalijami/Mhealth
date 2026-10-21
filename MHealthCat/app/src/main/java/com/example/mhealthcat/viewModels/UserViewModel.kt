@@ -3,25 +3,25 @@ package com.example.mhealthcat.viewModels
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mhealthcat.data.repositories.AuthRepository
 import com.example.mhealthcat.models.UserProfile
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+@OptIn(ExperimentalCoroutinesApi::class)
 class UserViewModel : ViewModel() {
 
-    // The actual data of logged-in user
-    private val _userProfileActual = MutableStateFlow(UserProfile(
-        email = "testni@uporabnik.si",
-        name = "Jana",
-        lastName = "Novak"
-        ))
+    // The actual data of logged-in user, loaded from Firestore (users/{uid})
+    private val _userProfileActual = MutableStateFlow(UserProfile())
 
 
     // Copy of the data that can be edited
     private val _userProfile = MutableStateFlow( _userProfileActual.value)
 
-    //Stored credentials -- placeholder for authenticator
-    private var _storedPassword = "testni123"
     private val _currentPasswordInput = MutableStateFlow<String>("")
 
     private val _deleteAccountPassword = MutableStateFlow("")
@@ -34,6 +34,8 @@ class UserViewModel : ViewModel() {
     private val _allowEditPasswordSubmit = MutableStateFlow(false)
     private val _newPassword = MutableStateFlow("")
     private val _newPasswordRepeat = MutableStateFlow("")
+    private val _passwordChangeError = MutableStateFlow<String?>(null)
+    private val _isLoading = MutableStateFlow(false)
 
 
 
@@ -48,6 +50,28 @@ class UserViewModel : ViewModel() {
     val deleteAccountPassword: StateFlow<String> = _deleteAccountPassword
 
     val newPasswordRepeat: StateFlow<String> = _newPasswordRepeat
+    val passwordChangeError: StateFlow<String?> = _passwordChangeError
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+
+    // Follow whoever is logged in: load their profile, clear it on logout
+    init {
+        viewModelScope.launch {
+            AuthRepository.currentUser
+                .flatMapLatest { user ->
+                    if (user == null) flowOf(UserProfile()) else AuthRepository.profile(user)
+                }
+                .collect { profile ->
+                    // The profile picture is not stored in Firebase yet, keep the one picked on this device
+                    val pictureUri = _userProfileActual.value.profilePictureUri
+                        .takeIf { _userProfileActual.value.id == profile.id }
+                    _userProfileActual.value = profile.copy(profilePictureUri = pictureUri)
+                    if (!_editingProfile.value) {
+                        _userProfile.value = _userProfileActual.value
+                    }
+                }
+        }
+    }
 
 
     fun resetUserProfile() {
@@ -66,6 +90,8 @@ class UserViewModel : ViewModel() {
         _currentPasswordInput.value = ""
         _newPassword.value = ""
         _newPasswordRepeat.value = ""
+        _passwordChangeError.value = null
+        _allowEditPasswordSubmit.value = false
     }
 
     fun toggleEditingPasswordOn() {
@@ -130,17 +156,21 @@ class UserViewModel : ViewModel() {
         _deleteAccountPassword.value = ""
     }
 
-    fun isDeleteAccountPasswordCorrect(): Boolean {
-        return _deleteAccountPassword.value == _storedPassword
-    }
-
+    // Name and last name are saved to Firestore; e-mail changes are not supported yet
     fun saveUserProfile() {
         _userProfileActual.value = _userProfileActual.value.copy(
             name = _userProfile.value.name,
             lastName = _userProfile.value.lastName,
-            email = _userProfile.value.email,
             profilePictureUri = _userProfile.value.profilePictureUri
         )
+        _userProfile.value = _userProfileActual.value
+        viewModelScope.launch {
+            try {
+                AuthRepository.updateProfile(_userProfileActual.value.name, _userProfileActual.value.lastName)
+            } catch (e: Exception) {
+                println("Shranjevanje profila ni uspelo: ${e.message}")
+            }
+        }
     }
 
     fun updateCurrentPassword(password: String) {
@@ -158,27 +188,48 @@ class UserViewModel : ViewModel() {
         toggleAllowEditPasswordSubmit()
     }
 
-
-    fun isPasswordCorrect(): Boolean {
-        return _currentPasswordInput.value == _storedPassword
-    }
-
-    fun saveNewPassword() {
-        _storedPassword = newPassword.value
-    }
-
     fun toggleAllowEditPasswordSubmit() {
         _allowEditPasswordSubmit.value = isValidPassword() && isValidNewPassword() && isValidPasswordRepeat()
     }
 
-    fun deleteUserProfile() {
-        _userProfileActual.value = UserProfile()
-        _userProfile.value = UserProfile()
-        _storedPassword = ""
+    // Firebase checks the current password; closes the form on success, shows an error otherwise
+    fun changePassword() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                AuthRepository.changePassword(_currentPasswordInput.value, _newPassword.value)
+                toggleEditingPasswordOff()
+            } catch (e: Exception) {
+                _passwordChangeError.value =
+                    AuthRepository.errorMessage(e, wrongCredentialsText = "Vpisali ste napačno trenutno geslo.")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun logOut() {
+        AuthRepository.logOut()
+        clearUserProfile()
         clearDeleteAccountPassword()
         clearPasswords()
         _editingProfile.value = false
         _editingPassword.value = false
+    }
+
+    fun deleteUserProfile(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                AuthRepository.deleteAccount(_deleteAccountPassword.value)
+                logOut()
+                onSuccess()
+            } catch (e: Exception) {
+                onError(AuthRepository.errorMessage(e, wrongCredentialsText = "Vpisano geslo ni pravilno"))
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 
 }

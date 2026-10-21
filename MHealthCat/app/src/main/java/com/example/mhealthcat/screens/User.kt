@@ -44,6 +44,7 @@ import com.example.mhealthcat.elementsAndClasses.CreateProfileImage
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
 import com.example.mhealthcat.elementsAndClasses.CreateTextField
 import com.example.mhealthcat.elementsAndClasses.ProfileImage
+import com.example.mhealthcat.elementsAndClasses.ShowUserErrorText
 import com.example.mhealthcat.R
 import com.example.mhealthcat.elementsAndClasses.CreateFilledButton
 import com.example.mhealthcat.ui.theme.RetroPurple
@@ -168,7 +169,7 @@ fun CreateUserInfo(
                 placeholder = "e-mail",
                 isValid = userViewModel.isValidEmail(),
                 errorMsg = "Vnesen e-mail naslov ni veljaven",
-                enabled = editing
+                enabled = false
             )
         }
 
@@ -248,6 +249,12 @@ fun EditPassword(userViewModel: UserViewModel) {
                 errorMsg = "Vnešeni gesli se ne ujemata",
                 isPassword = true
             )
+
+            val passwordChangeError by userViewModel.passwordChangeError.collectAsState()
+            ShowUserErrorText(
+                errorPresent = passwordChangeError != null,
+                errorText = passwordChangeError.orEmpty()
+            )
         }
 
 
@@ -302,7 +309,7 @@ fun CreateUserProfileButtonsView (
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 20.dp, top = 10.dp),
             onClick = {
-                userViewModel.clearUserProfile()
+                userViewModel.logOut()
                 navigationViewModel.isLoggedIn(false)
                 navigationViewModel.changeToScreen(AppScreen.LogIn)
             },
@@ -324,7 +331,8 @@ fun CreateUserProfileButtonsView (
     }
     if (showDeleteAlert) {
         val deleteAccountPassword by userViewModel.deleteAccountPassword.collectAsState()
-        var showDeleteError by remember { mutableStateOf(false) }
+        var deleteErrorText by remember { mutableStateOf<String?>(null) }
+        val isLoading by userViewModel.isLoading.collectAsState()
 
         AlertDialog(
             onDismissRequest = {
@@ -344,11 +352,11 @@ fun CreateUserProfileButtonsView (
                         textFieldValue = deleteAccountPassword,
                         onValueChange = {
                             userViewModel.updateDeleteAccountPassword(it)
-                            showDeleteError = false
-                                        },
+                            deleteErrorText = null
+                        },
                         placeholder = "Vaše geslo",
-                        isValid = !showDeleteError,
-                        errorMsg = "Vpisano geslo ni pravilno",
+                        isValid = deleteErrorText == null,
+                        errorMsg = deleteErrorText.orEmpty(),
                         isPassword = true
                     )
                 }
@@ -356,16 +364,16 @@ fun CreateUserProfileButtonsView (
             confirmButton = {
                 TextButton(
                     onClick = {
-                        if (userViewModel.isDeleteAccountPasswordCorrect()) {
-                            userViewModel.deleteUserProfile()
-                            navigationViewModel.isLoggedIn(false)
-                            navigationViewModel.changeToScreen(AppScreen.LogIn)
-                            showDeleteAlert = false
-                        }
-                        else{
-                            showDeleteError = true
-                        }
+                        userViewModel.deleteUserProfile(
+                            onSuccess = {
+                                navigationViewModel.isLoggedIn(false)
+                                navigationViewModel.changeToScreen(AppScreen.LogIn)
+                                showDeleteAlert = false
+                            },
+                            onError = { deleteErrorText = it }
+                        )
                     },
+                    enabled = !isLoading
                 ) {
                     Text("Potrdi")
                 }
@@ -452,6 +460,7 @@ fun CreateUserProfileButtonsPassword (
 
     var showAlert by remember {mutableStateOf(false)}
     val allowPasswordSubmit by userViewModel.allowEditPasswordSubmit.collectAsState()
+    val isLoading by userViewModel.isLoading.collectAsState()
 
     Row(
         modifier = Modifier
@@ -479,25 +488,21 @@ fun CreateUserProfileButtonsPassword (
             buttonText = "Shrani",
             fontSize = 18.sp,
             border = BorderStroke(width = 3.dp, color = RetroPurple),
-            enabled = allowPasswordSubmit
+            enabled = allowPasswordSubmit && !isLoading
         )
     }
 
     if (showAlert) {
         CreateAlert(
-            alertTitle = if (userViewModel.isPasswordCorrect()) "" +
-                    "Želite shraniti spremembe?" else "Vpisali ste napačno geslo",
-            alertText = if (userViewModel.isPasswordCorrect()) "" +
-                    "Prosimo vas da potrdite novo geslo" else "Prosim vnesite pravilno geslo",
+            alertTitle = "Želite shraniti spremembe?",
+            alertText = "Prosimo vas da potrdite novo geslo",
             onDismissRequest = {
                 showAlert = false
             },
             onConfirm = {
-                if (userViewModel.isPasswordCorrect()) {
-                    userViewModel.saveNewPassword()
-                }
+                // Firebase checks the current password; the form closes only if the change succeeds
                 showAlert = false
-                userViewModel.toggleEditingPasswordOff()
+                userViewModel.changePassword()
             }
         )
     }

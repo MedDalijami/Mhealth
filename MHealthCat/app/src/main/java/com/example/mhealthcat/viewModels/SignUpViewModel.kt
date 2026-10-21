@@ -2,19 +2,26 @@ package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
 import android.net.Uri
+import androidx.lifecycle.viewModelScope
 import com.example.mhealthcat.data.forms.SignUpForm
+import com.example.mhealthcat.data.repositories.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class SignUpViewModel: ViewModel() {
     private val _signUpForm = MutableStateFlow(SignUpForm())
     private val _showError = MutableStateFlow(false)
+    private val _errorText = MutableStateFlow("")
     private val _allowSubmit = MutableStateFlow(false)
+    private val _isLoading = MutableStateFlow(false)
 
     val signUpForm: StateFlow<SignUpForm> = _signUpForm.asStateFlow()
     val showError: StateFlow<Boolean> = _showError.asStateFlow()
+    val errorText: StateFlow<String> = _errorText.asStateFlow()
     val allowSubmit: StateFlow<Boolean> = _allowSubmit.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     fun toggleShowErrorOn() {
         _showError.value = true
@@ -86,27 +93,27 @@ class SignUpViewModel: ViewModel() {
         _signUpForm.value = _signUpForm.value.copy(profilePictureUri = uri)
     }
 
-    fun signUp(): Boolean {
-        return if (userDoesNotExist(_signUpForm.value.email)) {
-            println("Uspešna registracija.")
-            toggleShowErrorOff()
-            clearForm()
-            true
-
-        } else {
-            println("Neuspešna registracija.")
-            toggleShowErrorOn()
-            false
+    fun signUp(onSuccess: () -> Unit) {
+        val form = _signUpForm.value
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                AuthRepository.signUp(form.name.trim(), form.lastName.trim(), form.email.trim(), form.password)
+                toggleShowErrorOff()
+                clearForm()
+                onSuccess()
+            } catch (e: Exception) {
+                _errorText.value = AuthRepository.errorMessage(e)
+                toggleShowErrorOn()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
     private fun clearForm() {
         _signUpForm.value = SignUpForm()
+        toggleAllowSubmitOff()
     }
-
-    private fun userDoesNotExist(email: String): Boolean {
-        return email != "testni@uporabnik.si"
-    }
-
 
 }
