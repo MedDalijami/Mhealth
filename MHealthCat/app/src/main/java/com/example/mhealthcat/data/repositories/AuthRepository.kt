@@ -106,9 +106,16 @@ object AuthRepository {
 
     suspend fun deleteAccount(password: String) {
         val user = reauthenticate(password)
-        // TODO: once entries are stored in Firestore, delete users/{uid}/sleep, sport, social
-        //  and wellbeing here as well. Firestore does not delete subcollections on its own.
-        // The profile picture is a field of this document, so it is deleted together with it.
+
+        for (collectionName in EntryCollection.all) {
+            val entries = userDocument(user.uid).collection(collectionName).get().await().documents
+            entries.chunked(100).forEach { chunk ->
+                val batch = firestore.batch()
+                chunk.forEach { batch.delete(it.reference) }
+                batch.commit().await()
+            }
+        }
+
         userDocument(user.uid).delete().await()
         user.delete().await()
     }

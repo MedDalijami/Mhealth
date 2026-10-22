@@ -7,7 +7,7 @@ import com.example.mhealthcat.data.forms.WellbeingForm
 import com.example.mhealthcat.testData.TestData
 
 
-class SleepRepository(initialItems: List<SleepForm> = emptyList()) : DataRepository<SleepForm>(initialItems) {
+class SleepRepository: DataRepository<SleepForm> (EntryCollection.SLEEP, SleepForm::class.java){
     override fun stampMetadata(
         draft: SleepForm,
         id: String,
@@ -16,7 +16,7 @@ class SleepRepository(initialItems: List<SleepForm> = emptyList()) : DataReposit
 
 }
 
-class SportRepository(initialItems: List<SportForm> = emptyList()) : DataRepository<SportForm>(initialItems) {
+class SportRepository: DataRepository<SportForm>(EntryCollection.SPORT, SportForm::class.java) {
     override fun stampMetadata(
         draft: SportForm,
         id: String,
@@ -25,7 +25,7 @@ class SportRepository(initialItems: List<SportForm> = emptyList()) : DataReposit
 
 }
 
-class WellbeingRepository(initialItems: List<WellbeingForm> = emptyList()) : DataRepository<WellbeingForm>(initialItems) {
+class WellbeingRepository: DataRepository<WellbeingForm>(EntryCollection.WELLBEING, WellbeingForm::class.java) {
 
     override fun stampMetadata(
         draft: WellbeingForm,
@@ -35,7 +35,7 @@ class WellbeingRepository(initialItems: List<WellbeingForm> = emptyList()) : Dat
 
 }
 
-class SocialRepository(initialItems: List<SocialForm> = emptyList()) : DataRepository<SocialForm>(initialItems) {
+class SocialRepository: DataRepository<SocialForm>(EntryCollection.SOCIAL, SocialForm::class.java) {
 
     override fun stampMetadata(
         draft: SocialForm,
@@ -46,8 +46,8 @@ class SocialRepository(initialItems: List<SocialForm> = emptyList()) : DataRepos
 }
 
 object MhealthDataRepositories {
-    val sleepRepository = SleepRepository(TestData.sleepData)
-    val sportRepository = SportRepository(TestData.sportData)
-    val wellbeingRepository = WellbeingRepository(TestData.wellbeingData)
-    val socialRepository = SocialRepository(TestData.socialData)
+    val sleepRepository = SleepRepository()
+    val sportRepository = SportRepository()
+    val wellbeingRepository = WellbeingRepository()
+    val socialRepository = SocialRepository()
 }

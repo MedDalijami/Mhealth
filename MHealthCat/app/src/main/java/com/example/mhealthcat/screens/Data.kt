@@ -191,11 +191,18 @@ fun CreateGraph(
 ) {
     val dataType = dataDisplayViewModel.selectedDataType.collectAsState().value
 
-    val chartData: PieChartData = when (dataType) {
-        DataType.SLEEP -> dataDisplayViewModel.returnSleepChartData()
-        DataType.SOCIAL -> dataDisplayViewModel.returnSocialChartData()
-        DataType.SPORT -> dataDisplayViewModel.returnSportChartData()
-        DataType.WELLBEING -> dataDisplayViewModel.returnWellbeingChartData()
+    val sleepItems by dataDisplayViewModel.listOfSleepData.collectAsState()
+    val socialItems by dataDisplayViewModel.listOfSocialData.collectAsState()
+    val sportItems by dataDisplayViewModel.listOfSportData.collectAsState()
+    val wellbeingItems by dataDisplayViewModel.listOfWellbeingData.collectAsState()
+
+    val chartData: PieChartData = remember(dataType, sleepItems, socialItems, sportItems, wellbeingItems) {
+        when (dataType) {
+            DataType.SLEEP -> dataDisplayViewModel.returnSleepChartData()
+            DataType.SOCIAL -> dataDisplayViewModel.returnSocialChartData()
+            DataType.SPORT -> dataDisplayViewModel.returnSportChartData()
+            DataType.WELLBEING -> dataDisplayViewModel.returnWellbeingChartData()
+        }
     }
     val pieChartConfig = PieChartConfig(
         showSliceLabels = false,
