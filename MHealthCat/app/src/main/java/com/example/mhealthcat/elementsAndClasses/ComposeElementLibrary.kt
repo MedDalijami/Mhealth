@@ -17,11 +17,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -37,6 +40,8 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -88,6 +93,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
+import com.example.mhealthcat.data.points.Mood
+import com.example.mhealthcat.data.points.PointsCalculator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -726,3 +733,62 @@ fun ProfileImage(
     }
 }
 
+@Composable
+fun PointsHeader(todayPoints: Int, totalPoints: Int, mood: Mood) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = mood.displayName,
+            fontFamily = roboto,
+            fontSize = 22.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = "Današnje točke: $todayPoints / ${PointsCalculator.MAX_DAILY_POINTS}",
+            fontFamily = roboto,
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        val progress = (todayPoints.toFloat() / PointsCalculator.MAX_DAILY_POINTS).coerceIn(0f, 1f)
+        val emojiSize = 30.dp
+
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(emojiSize),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp),
+                color = RetroPixelBorder,
+                gapSize = 0.dp,
+                drawStopIndicator = {}
+            )
+
+
+            Box(
+                modifier = Modifier
+                    .offset(x = (maxWidth - emojiSize) * progress)
+                    .size(emojiSize),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = mood.emoji, fontSize = 20.sp)
+            }
+        }
+
+        Text(
+            text = "Skupaj točk: $totalPoints",
+            fontFamily = roboto,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
