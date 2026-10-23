@@ -14,6 +14,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -95,6 +97,9 @@ import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.mhealthcat.data.points.Mood
 import com.example.mhealthcat.data.points.PointsCalculator
+import com.example.mhealthcat.ui.theme.RetroDark
+import com.example.mhealthcat.ui.theme.RetroRed
+import com.example.mhealthcat.ui.theme.RetroTeal
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -791,4 +796,23 @@ fun PointsHeader(todayPoints: Int, totalPoints: Int, mood: Mood) {
             color = MaterialTheme.colorScheme.onBackground
         )
     }
+}
+@Composable
+fun CategoryChip(category: DataType) {
+    val (emoji, color) = when (category) {
+        DataType.SLEEP -> "🌙" to RetroRed
+        DataType.SOCIAL -> "👾" to RetroYellow
+        DataType.SPORT -> "👟" to RetroTeal
+        DataType.WELLBEING -> "🫂" to RetroPixelBorder
+        DataType.ALL -> "📋" to RetroPurple
+    }
+
+    Text(
+        text = "$emoji ${category.displayName}",
+        style = MaterialTheme.typography.labelLarge,
+        color = RetroDark,
+        modifier = Modifier
+            .background(color = color, shape = RoundedCornerShape(50))
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    )
 }

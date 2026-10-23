@@ -13,16 +13,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
@@ -53,8 +60,14 @@ import com.example.mhealthcat.data.forms.WellbeingForm
 import com.example.mhealthcat.ui.theme.RetroDark2
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.R
+import com.example.mhealthcat.data.filters.EntryFilter
+import com.example.mhealthcat.data.filters.TimeFilter
+import com.example.mhealthcat.data.repositories.Entry
 import com.example.mhealthcat.ui.theme.RetroRed
 import kotlinx.coroutines.launch
+import com.example.mhealthcat.elementsAndClasses.CategoryChip
+import com.example.mhealthcat.ui.theme.RetroPixelBorder
+import kotlin.math.roundToInt
 
 @Composable
 fun Data() {
@@ -71,7 +84,6 @@ fun Data() {
         if (dataDisplayViewModel.graphView.collectAsState().value) {
             val dataType = dataDisplayViewModel.selectedDataType.collectAsState().value
 
-            // Forces recomposition on every change of dataType
             key(dataType) {
                 CreateGraph(dataDisplayViewModel)
             }
@@ -86,6 +98,10 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
 
     val toggleOptions = listOf("Grafični prikaz", "Prikazano kot seznam")
     val graphView by dataDisplayViewModel.graphView.collectAsState()
+    val timeFilter by dataDisplayViewModel.timeFilter.collectAsState()
+    val customPeriod by dataDisplayViewModel.customPeriod.collectAsState()
+    val ratingRange by dataDisplayViewModel.ratingRange.collectAsState()
+    var showPeriodPicker by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -93,6 +109,7 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
+
         CreateSelectMenu(
             onSelect = { dataDisplayViewModel.changeDataType(it) },
             selectedItem = dataDisplayViewModel.selectedDataType.collectAsState().value.displayName,
@@ -100,6 +117,48 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
             label = "Prikazani podatki"
         )
 
+        CreateSelectMenu(
+            modifier = Modifier.fillMaxWidth(),
+            onSelect = {
+                if (it == TimeFilter.CUSTOM.displayName) showPeriodPicker = true
+                else dataDisplayViewModel.changeTimeFilter(it)
+            },
+            selectedItem = dataDisplayViewModel.timeFilterText(timeFilter, customPeriod),
+            selectItemsList = dataDisplayViewModel.timeFiltersAsStringList(),
+            label = "Obdobje"
+        )
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = dataDisplayViewModel.ratingRangeText(ratingRange),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            RangeSlider(
+                value = ratingRange.first.toFloat()..ratingRange.last.toFloat(),
+                onValueChange = { range ->
+                    dataDisplayViewModel.changeRatingRange(
+                        range.start.roundToInt(),
+                        range.endInclusive.roundToInt()
+                    )
+                },
+                valueRange = EntryFilter.ALL_RATINGS.first.toFloat()..EntryFilter.ALL_RATINGS.last.toFloat(),
+                steps = 3,
+                colors = SliderDefaults.colors(
+                    thumbColor = RetroPixelBorder,
+                    activeTrackColor = RetroPixelBorder
+                )
+            )
+        }
+
+        if (showPeriodPicker) {
+            CustomPeriodDialog(
+                onConfirm = { start, end ->
+                    dataDisplayViewModel.setCustomPeriod(start, end)
+                    showPeriodPicker = false
+                },
+                onDismiss = { showPeriodPicker = false }
+            )
+        }
         CreateToggle(
             modifier = Modifier.fillMaxWidth(),
             selected = if (graphView) 0 else 1,
@@ -108,6 +167,37 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
         )
     }
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomPeriodDialog(
+    onConfirm: (startMillis: Long, endMillis: Long) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val state = rememberDateRangePickerState()
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val start = state.selectedStartDateMillis ?: return@TextButton
+                    onConfirm(start, state.selectedEndDateMillis ?: start)
+                },
+                enabled = state.selectedStartDateMillis != null
+            ) { Text("Potrdi") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Prekliči") }
+        }
+    ) {
+        DateRangePicker(
+            state = state,
+            title = { Text("Izberi obdobje", modifier = Modifier.padding(16.dp)) },
+            modifier = Modifier.weight(1f)
+        )
+    }
 }
 
 @Composable
@@ -198,6 +288,7 @@ fun CreateGraph(
 
     val chartData: PieChartData = remember(dataType, sleepItems, socialItems, sportItems, wellbeingItems) {
         when (dataType) {
+            DataType.ALL -> dataDisplayViewModel.returnAllCategoriesChartData()
             DataType.SLEEP -> dataDisplayViewModel.returnSleepChartData()
             DataType.SOCIAL -> dataDisplayViewModel.returnSocialChartData()
             DataType.SPORT -> dataDisplayViewModel.returnSportChartData()
@@ -276,6 +367,7 @@ fun CreateDataList(dataDisplayViewModel: DataDisplayViewModel) {
         DataType.SOCIAL -> socialItems
         DataType.SPORT -> sportItems
         DataType.WELLBEING -> wellbeingItems
+        DataType.ALL -> (sleepItems + socialItems + sportItems + wellbeingItems).sortedByDescending { it.timestamp }
     }
 
     LazyColumn(
@@ -287,33 +379,67 @@ fun CreateDataList(dataDisplayViewModel: DataDisplayViewModel) {
 
     ) {
         items(items.size) { index ->
+            val showCategory = dataType == DataType.ALL
+
             when (val item = items[index]) {
-                is SleepForm ->
-                    CreateDeleteSlider(
-                        onDismiss = { dataDisplayViewModel.removeSleepItem(item) }
-                    ) { CreateSleepListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
+                is SleepForm -> CreateDeleteSlider(
+                    onDismiss = { dataDisplayViewModel.removeSleepItem(item) }
+                ) {
+                    CreateSleepListItem(
+                        item = item,
+                        dataDisplayViewModel = dataDisplayViewModel,
+                        showCategory = showCategory
+                    )
+                }
 
                 is SocialForm -> CreateDeleteSlider(
                     onDismiss = { dataDisplayViewModel.removeSocialItem(item) }
-                ) {CreateSocialListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
+                ) {
+                    CreateSocialListItem(
+                        item = item,
+                        dataDisplayViewModel = dataDisplayViewModel,
+                        showCategory = showCategory
+                    )
+                }
 
                 is SportForm -> CreateDeleteSlider(
                     onDismiss = { dataDisplayViewModel.removeSportItem(item) }
-                ) { CreateSportListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
+                ) {
+                    CreateSportListItem(
+                        item = item,
+                        dataDisplayViewModel = dataDisplayViewModel,
+                        showCategory = showCategory
+                    )
+                }
 
                 is WellbeingForm -> CreateDeleteSlider(
                     onDismiss = { dataDisplayViewModel.removeWellbeingItem(item) }
-                ) { CreateWellbeingListItem(item = item, dataDisplayViewModel = dataDisplayViewModel) }
-
+                ) {
+                    CreateWellbeingListItem(
+                        item = item,
+                        dataDisplayViewModel = dataDisplayViewModel,
+                        showCategory = showCategory
+                    )
+                }
             }
         }
     }
-
 }
 
+private fun categoryOf(item: Entry): DataType = when (item) {
+    is SleepForm -> DataType.SLEEP
+    is SocialForm -> DataType.SOCIAL
+    is SportForm -> DataType.SPORT
+    is WellbeingForm -> DataType.WELLBEING
+    else -> DataType.ALL
+}
 
 @Composable
-fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDisplayViewModel) {
+fun CreateWellbeingListItem(
+    item: WellbeingForm,
+    dataDisplayViewModel: DataDisplayViewModel,
+    showCategory: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -321,6 +447,9 @@ fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDispl
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        if (showCategory) {
+            CategoryChip(DataType.WELLBEING)
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -356,8 +485,14 @@ fun CreateWellbeingListItem(item: WellbeingForm, dataDisplayViewModel: DataDispl
     }
 }
 
+
+
 @Composable
-fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewModel) {
+fun CreateSportListItem(
+    item: SportForm,
+    dataDisplayViewModel: DataDisplayViewModel,
+    showCategory: Boolean = false
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -365,6 +500,9 @@ fun CreateSportListItem(item: SportForm, dataDisplayViewModel: DataDisplayViewMo
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        if (showCategory) {
+            CategoryChip(DataType.SPORT)
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -463,7 +601,8 @@ fun CreateDeleteSlider (
 @Composable
 fun CreateSocialListItem(
     item: SocialForm,
-    dataDisplayViewModel: DataDisplayViewModel
+    dataDisplayViewModel: DataDisplayViewModel,
+    showCategory: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -472,13 +611,16 @@ fun CreateSocialListItem(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        if (showCategory) {
+            CategoryChip(DataType.SOCIAL)
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "${item.socialInteraction} ocenjenta z ${item.rating} ⭐",
+                "${item.socialInteraction} ocenjen z ${item.rating} ⭐",
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
@@ -489,27 +631,7 @@ fun CreateSocialListItem(
         }
 
         Text(
-            "Družil_a sem se ${
-                if (item.numberOfPeople != 1) {
-                    when (item.people) {
-                        "Prijatelji" -> "z ${item.numberOfPeople} prijatelji"
-                        "Partner/ka" -> "z ${item.numberOfPeople} partnerji"
-                        "Družina" -> "z ${item.numberOfPeople} družinskimi člani"
-                        "Neznanci" -> "z ${item.numberOfPeople} neznanci"
-                        "Sodelavci" -> "z ${item.numberOfPeople} sodelavci"
-                        else -> "z ${item.numberOfPeople} ljudmi"
-                    }
-                } else {
-                    when (item.people) {
-                        "Prijatelji" -> "s prijateljem"
-                        "Partner/ka" -> "s partnerjem/ko"
-                        "Družina" -> "z družinskim članom"
-                        "Neznanci" -> "z neznancem"
-                        "Sodelavci" -> "s sodelavcem"
-                        else -> "z osebo"
-                    }
-                }
-            } ",
+            "Družil_a sem se ${companionsText(item.people, item.numberOfPeople)} ",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -532,7 +654,8 @@ fun CreateSocialListItem(
 @Composable
 fun CreateSleepListItem(
     item: SleepForm,
-    dataDisplayViewModel: DataDisplayViewModel
+    dataDisplayViewModel: DataDisplayViewModel,
+    showCategory: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -541,6 +664,9 @@ fun CreateSleepListItem(
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        if (showCategory) {
+            CategoryChip(DataType.SLEEP)
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -585,3 +711,24 @@ fun DataPreview() {
         }
     }
 }
+
+private fun companionsText(people: String, count: Int): String =
+    if (count != 1) {
+        when (people) {
+            "Prijatelji" -> "z $count prijatelji"
+            "Partner/ka" -> "z $count partnerji"
+            "Družina" -> "z $count družinskimi člani"
+            "Neznanci" -> "z $count neznanci"
+            "Sodelavci" -> "z $count sodelavci"
+            else -> "z $count ljudmi"
+        }
+    } else {
+        when (people) {
+            "Prijatelji" -> "s prijateljem"
+            "Partner/ka" -> "s partnerjem/ko"
+            "Družina" -> "z družinskim članom"
+            "Neznanci" -> "z neznancem"
+            "Sodelavci" -> "s sodelavcem"
+            else -> "z osebo"
+        }
+    }

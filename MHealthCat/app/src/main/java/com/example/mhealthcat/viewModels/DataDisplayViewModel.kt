@@ -1,23 +1,34 @@
 package com.example.mhealthcat.viewModels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import co.yml.charts.common.model.PlotType
 import co.yml.charts.ui.piechart.models.PieChartData
+import com.example.mhealthcat.data.filters.EntryFilter
+import com.example.mhealthcat.data.filters.TimeFilter
 import com.example.mhealthcat.elementsAndClasses.DataType
 import com.example.mhealthcat.data.forms.SleepForm
 import com.example.mhealthcat.data.forms.SocialForm
 import com.example.mhealthcat.data.forms.SportForm
 import com.example.mhealthcat.data.forms.WellbeingForm
+import com.example.mhealthcat.data.repositories.Entry
 import com.example.mhealthcat.data.repositories.MhealthDataRepositories
-import com.example.mhealthcat.testData.TestData
 import com.example.mhealthcat.ui.theme.RetroPixelBorder
 import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.ui.theme.RetroRed
 import com.example.mhealthcat.ui.theme.RetroTeal
 import com.example.mhealthcat.ui.theme.RetroYellow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -29,20 +40,61 @@ class DataDisplayViewModel : ViewModel() {
     private val sportRepository = MhealthDataRepositories.sportRepository
     private val wellbeingRepository = MhealthDataRepositories.wellbeingRepository
 
-    private val _selectedDataType = MutableStateFlow(DataType.SLEEP)
+    private val _selectedDataType = MutableStateFlow(DataType.ALL)
 
     private val _sliceColors = listOf(RetroRed, RetroYellow, RetroTeal, RetroPixelBorder, RetroPurple)
     private val _graphView = MutableStateFlow(true)
 
 
-    val listOfSleepData: StateFlow<List<SleepForm>> = sleepRepository.items
-    val listOfSocialData: StateFlow<List<SocialForm>> = socialRepository.items
-    val listOfSportData: StateFlow<List<SportForm>> = sportRepository.items
-    val listOfWellbeingData: StateFlow<List<WellbeingForm>> = wellbeingRepository.items
+    private val _timeFilter = MutableStateFlow(TimeFilter.ALL)
+    private val _customPeriod = MutableStateFlow<ClosedRange<LocalDate>?>(null)
+    private val _ratingRange = MutableStateFlow(EntryFilter.ALL_RATINGS)
 
+    val timeFilter: StateFlow<TimeFilter> = _timeFilter.asStateFlow()
+    val customPeriod: StateFlow<ClosedRange<LocalDate>?> = _customPeriod.asStateFlow()
+    val ratingRange: StateFlow<IntRange> = _ratingRange.asStateFlow()
+
+    private fun <T : Entry> filtered(items: StateFlow<List<T>>): StateFlow<List<T>> =
+        combine(items, _timeFilter, _customPeriod, _ratingRange) { list, time, custom, ratings ->
+            EntryFilter.apply(list, EntryFilter.period(time, custom), ratings)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, items.value)
+
+    val listOfSleepData: StateFlow<List<SleepForm>> = filtered(sleepRepository.items)
+    val listOfSocialData: StateFlow<List<SocialForm>> = filtered(socialRepository.items)
+    val listOfSportData: StateFlow<List<SportForm>> = filtered(sportRepository.items)
+    val listOfWellbeingData: StateFlow<List<WellbeingForm>> = filtered(wellbeingRepository.items)
     val graphView: MutableStateFlow<Boolean> = _graphView
-
     val selectedDataType: MutableStateFlow<DataType> = _selectedDataType
+
+    fun changeTimeFilter(displayName: String) {
+        _timeFilter.value = TimeFilter.entries.first { it.displayName == displayName }
+    }
+
+    fun setCustomPeriod(startMillis: Long, endMillis: Long) {
+        val start = Instant.ofEpochMilli(startMillis).atZone(ZoneOffset.UTC).toLocalDate()
+        val end = Instant.ofEpochMilli(endMillis).atZone(ZoneOffset.UTC).toLocalDate()
+        _customPeriod.value = start..end
+        _timeFilter.value = TimeFilter.CUSTOM    }
+
+    fun timeFilterText(time: TimeFilter, period: ClosedRange<LocalDate>?): String {
+        if (time != TimeFilter.CUSTOM || period == null) return time.displayName
+        val format = DateTimeFormatter.ofPattern("d. M. yyyy")
+        return "${period.start.format(format)} – ${period.endInclusive.format(format)}"
+    }
+
+    fun changeRatingRange(min: Int, max: Int) {
+        _ratingRange.value = min..max
+    }
+    fun  ratingRangeText(range: IntRange): String {
+        return if (range.first == range.last) {
+            "${range.first} ⭐"
+        } else {
+            "${range.first} - ${range.last} ⭐"
+        }
+    }
+
+    fun timeFiltersAsStringList(): List<String> = TimeFilter.entries.map { it.displayName }
+
 
 
     fun formatTimestamp(createdAt: Long): String {
@@ -77,16 +129,16 @@ class DataDisplayViewModel : ViewModel() {
     }
 
     fun returnSleepRatings(): Map<Int, Int> =
-        sleepRepository.items.value.groupingBy { it.rating }.eachCount()
+        listOfSleepData.value.groupingBy { it.rating }.eachCount()
 
     fun returnSocialRatings(): Map<Int, Int> =
-        socialRepository.items.value.groupingBy { it.rating }.eachCount()
+        listOfSocialData.value.groupingBy { it.rating }.eachCount()
 
     fun returnSportRatings(): Map<Int, Int> =
-        sportRepository.items.value.groupingBy { it.rating }.eachCount()
+        listOfSportData.value.groupingBy { it.rating }.eachCount()
 
     fun returnWellbeingRatings(): Map<Int, Int> =
-        wellbeingRepository.items.value.groupingBy { it.rating }.eachCount()
+        listOfWellbeingData.value.groupingBy { it.rating }.eachCount()
 
     private fun buildChartData(data: Map<Int, Int>): PieChartData = PieChartData(
         slices = (1..5).map { rating ->
@@ -102,6 +154,16 @@ class DataDisplayViewModel : ViewModel() {
     fun returnSocialChartData()    = buildChartData(returnSocialRatings())
     fun returnSportChartData()     = buildChartData(returnSportRatings())
     fun returnWellbeingChartData() = buildChartData(returnWellbeingRatings())
+
+    fun returnAllCategoriesChartData(): PieChartData = PieChartData(
+        slices = listOf(
+            PieChartData.Slice(DataType.SLEEP.displayName, listOfSleepData.value.size.toFloat(), _sliceColors[0]),
+            PieChartData.Slice(DataType.SOCIAL.displayName, listOfSocialData.value.size.toFloat(), _sliceColors[1]),
+            PieChartData.Slice(DataType.SPORT.displayName, listOfSportData.value.size.toFloat(), _sliceColors[2]),
+            PieChartData.Slice(DataType.WELLBEING.displayName, listOfWellbeingData.value.size.toFloat(), _sliceColors[3])
+        ),
+        plotType = PlotType.Donut
+    )
 
     fun removeSleepItem(item: SleepForm) {
         sleepRepository.remove(item.id)
