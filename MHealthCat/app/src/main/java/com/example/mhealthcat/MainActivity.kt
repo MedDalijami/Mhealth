@@ -12,7 +12,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.lifecycleScope
+import com.example.mhealthcat.data.messages.CatMessageScheduler
+import com.example.mhealthcat.data.repositories.AuthRepository
 import com.example.mhealthcat.ui.theme.MHealthCatTheme
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +30,12 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+            }
+        }
+        lifecycleScope.launch {
+            AuthRepository.currentUser.collect { user ->
+                if (user != null) CatMessageScheduler.schedule(this@MainActivity)
+                else CatMessageScheduler.cancel(this@MainActivity)
             }
         }
     }

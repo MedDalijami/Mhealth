@@ -18,11 +18,34 @@ import com.example.mhealthcat.data.points.Mood
 import com.example.mhealthcat.elementsAndClasses.BackgroundAnimation
 import com.example.mhealthcat.viewModels.HomeViewModel
 import com.example.mhealthcat.elementsAndClasses.PointsHeader
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.example.mhealthcat.data.messages.CatMessageScheduler
 
 @Composable
 fun Home() {
     val homeViewModel: HomeViewModel = viewModel()
     val pointsState by homeViewModel.pointsState.collectAsState()
+
+    val context = LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
