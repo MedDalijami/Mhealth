@@ -1,5 +1,6 @@
 package com.example.mhealthcat.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,15 +8,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
@@ -48,7 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import co.yml.charts.ui.piechart.charts.PieChart
 import co.yml.charts.ui.piechart.models.PieChartConfig
 import co.yml.charts.ui.piechart.models.PieChartData
@@ -62,7 +66,6 @@ import com.example.mhealthcat.ui.theme.RetroPurple
 import com.example.mhealthcat.R
 import com.example.mhealthcat.data.filters.EntryFilter
 import com.example.mhealthcat.data.filters.TimeFilter
-import com.example.mhealthcat.data.repositories.Entry
 import com.example.mhealthcat.ui.theme.RetroRed
 import kotlinx.coroutines.launch
 import com.example.mhealthcat.elementsAndClasses.CategoryChip
@@ -72,16 +75,18 @@ import kotlin.math.roundToInt
 @Composable
 fun Data() {
     val dataDisplayViewModel: DataDisplayViewModel = viewModel()
+    val graphView by dataDisplayViewModel.graphView.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 60.dp),
+            .padding(top = 20.dp)
+            .then(if (graphView) Modifier.verticalScroll(rememberScrollState()) else Modifier)
     ) {
 
         CreateDataMenu(dataDisplayViewModel = dataDisplayViewModel)
 
-        if (dataDisplayViewModel.graphView.collectAsState().value) {
+        if (graphView) {
             val dataType = dataDisplayViewModel.selectedDataType.collectAsState().value
 
             key(dataType) {
@@ -96,20 +101,14 @@ fun Data() {
 @Composable
 fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
 
-    val toggleOptions = listOf("Grafični prikaz", "Prikazano kot seznam")
+    val toggleOptions = listOf("Graf", "Seznam")
     val graphView by dataDisplayViewModel.graphView.collectAsState()
-    val timeFilter by dataDisplayViewModel.timeFilter.collectAsState()
-    val customPeriod by dataDisplayViewModel.customPeriod.collectAsState()
-    val ratingRange by dataDisplayViewModel.ratingRange.collectAsState()
-    var showPeriodPicker by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
-
         CreateSelectMenu(
             onSelect = { dataDisplayViewModel.changeDataType(it) },
             selectedItem = dataDisplayViewModel.selectedDataType.collectAsState().value.displayName,
@@ -117,48 +116,8 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
             label = "Prikazani podatki"
         )
 
-        CreateSelectMenu(
-            modifier = Modifier.fillMaxWidth(),
-            onSelect = {
-                if (it == TimeFilter.CUSTOM.displayName) showPeriodPicker = true
-                else dataDisplayViewModel.changeTimeFilter(it)
-            },
-            selectedItem = dataDisplayViewModel.timeFilterText(timeFilter, customPeriod),
-            selectItemsList = dataDisplayViewModel.timeFiltersAsStringList(),
-            label = "Obdobje"
-        )
+        CreateFilters(dataDisplayViewModel)
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = dataDisplayViewModel.ratingRangeText(ratingRange),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            RangeSlider(
-                value = ratingRange.first.toFloat()..ratingRange.last.toFloat(),
-                onValueChange = { range ->
-                    dataDisplayViewModel.changeRatingRange(
-                        range.start.roundToInt(),
-                        range.endInclusive.roundToInt()
-                    )
-                },
-                valueRange = EntryFilter.ALL_RATINGS.first.toFloat()..EntryFilter.ALL_RATINGS.last.toFloat(),
-                steps = 3,
-                colors = SliderDefaults.colors(
-                    thumbColor = RetroPixelBorder,
-                    activeTrackColor = RetroPixelBorder
-                )
-            )
-        }
-
-        if (showPeriodPicker) {
-            CustomPeriodDialog(
-                onConfirm = { start, end ->
-                    dataDisplayViewModel.setCustomPeriod(start, end)
-                    showPeriodPicker = false
-                },
-                onDismiss = { showPeriodPicker = false }
-            )
-        }
         CreateToggle(
             modifier = Modifier.fillMaxWidth(),
             selected = if (graphView) 0 else 1,
@@ -166,10 +125,103 @@ fun CreateDataMenu(dataDisplayViewModel: DataDisplayViewModel) {
             options = toggleOptions
         )
     }
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@Composable
+fun CreateFilters(dataDisplayViewModel: DataDisplayViewModel) {
+    val timeFilter by dataDisplayViewModel.timeFilter.collectAsState()
+    val customPeriod by dataDisplayViewModel.customPeriod.collectAsState()
+    val ratingRange by dataDisplayViewModel.ratingRange.collectAsState()
+
+    // Filters are folded away by default
+    var showFilters by remember { mutableStateOf(false) }
+
+    val filtersActive = timeFilter != TimeFilter.ALL || ratingRange != EntryFilter.ALL_RATINGS
+
+    Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+
+        TextButton(
+            onClick = { showFilters = !showFilters },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (filtersActive) {
+                    "Filtri: ${dataDisplayViewModel.timeFilterText(timeFilter, customPeriod)} · " +
+                            dataDisplayViewModel.ratingRangeText(ratingRange)
+                } else "Filtri",
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(if (showFilters) "▴" else "▾")
+        }
+
+        AnimatedVisibility(visible = showFilters) {
+            Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                CreatePeriodFilter(dataDisplayViewModel)
+                CreateRatingFilter(dataDisplayViewModel)
+            }
+        }
+    }
+}
+
+@Composable
+fun CreatePeriodFilter(dataDisplayViewModel: DataDisplayViewModel) {
+    val timeFilter by dataDisplayViewModel.timeFilter.collectAsState()
+    val customPeriod by dataDisplayViewModel.customPeriod.collectAsState()
+    var showPeriodPicker by remember { mutableStateOf(false) }
+
+    CreateSelectMenu(
+        modifier = Modifier.fillMaxWidth(),
+        onSelect = {
+            if (it == TimeFilter.CUSTOM.displayName) showPeriodPicker = true
+            else dataDisplayViewModel.changeTimeFilter(it)
+        },
+        selectedItem = dataDisplayViewModel.timeFilterText(timeFilter, customPeriod),
+        selectItemsList = dataDisplayViewModel.timeFiltersAsStringList(),
+        label = "Obdobje"
+    )
+
+    if (showPeriodPicker) {
+        CustomPeriodDialog(
+            onConfirm = { start, end ->
+                dataDisplayViewModel.setCustomPeriod(start, end)
+                showPeriodPicker = false
+            },
+            onDismiss = { showPeriodPicker = false }
+        )
+    }
+}
+
+@Composable
+fun CreateRatingFilter(dataDisplayViewModel: DataDisplayViewModel) {
+    val ratingRange by dataDisplayViewModel.ratingRange.collectAsState()
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = dataDisplayViewModel.ratingRangeText(ratingRange),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        RangeSlider(
+            value = ratingRange.first.toFloat()..ratingRange.last.toFloat(),
+            onValueChange = { range ->
+                dataDisplayViewModel.changeRatingRange(
+                    range.start.roundToInt(),
+                    range.endInclusive.roundToInt()
+                )
+            },
+            valueRange = EntryFilter.ALL_RATINGS.first.toFloat()..EntryFilter.ALL_RATINGS.last.toFloat(),
+            steps = 3,
+            colors = SliderDefaults.colors(
+                thumbColor = RetroPixelBorder,
+                activeTrackColor = RetroPixelBorder
+            )
+        )
+    }
+}
+
+
 @Composable
 fun CustomPeriodDialog(
     onConfirm: (startMillis: Long, endMillis: Long) -> Unit,
@@ -243,7 +295,6 @@ fun CreateChartLegend(slices: List<PieChartData.Slice>) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateToggle(
     modifier: Modifier = Modifier,
@@ -325,10 +376,15 @@ fun CreateGraph(
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.size(400.dp)
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .widthIn(max = 400.dp)
+                .aspectRatio(1f)
         ) {
             PieChart(
-                modifier = Modifier.size(380.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
                 pieChartData = chartData,
                 pieChartConfig = pieChartConfig,
                 onSliceClick = { slice ->
@@ -424,14 +480,6 @@ fun CreateDataList(dataDisplayViewModel: DataDisplayViewModel) {
             }
         }
     }
-}
-
-private fun categoryOf(item: Entry): DataType = when (item) {
-    is SleepForm -> DataType.SLEEP
-    is SocialForm -> DataType.SOCIAL
-    is SportForm -> DataType.SPORT
-    is WellbeingForm -> DataType.WELLBEING
-    else -> DataType.ALL
 }
 
 @Composable
@@ -698,20 +746,6 @@ fun CreateSleepListItem(
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun DataPreview() {
-    MHealthCatTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Data()
-        }
-    }
-}
-
 private fun companionsText(people: String, count: Int): String =
     if (count != 1) {
         when (people) {
@@ -732,3 +766,18 @@ private fun companionsText(people: String, count: Int): String =
             else -> "z osebo"
         }
     }
+
+
+@Preview(showBackground = true)
+@Composable
+fun DataPreview() {
+    MHealthCatTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Data()
+        }
+    }
+}
+

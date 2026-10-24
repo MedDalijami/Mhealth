@@ -37,10 +37,10 @@
       </SelectionState>
       <SelectionState runConfigName="androidTest">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-10-24T10:50:21.050621800Z">
+        <DropdownSelection timestamp="2026-10-24T12:31:03.756849400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Uporabnik\.android\avd\Pixel_8_Pro.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Uporabnik\.android\avd\Small_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
